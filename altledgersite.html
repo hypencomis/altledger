@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alt Ledger — Independent Research. Smarter Investing.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   ALT LEDGER — shared foundation
+   ===================================================================== */
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#FAFAF9; --surface:#FFFFFF; --subtle:#F2F6F9;
+  --text:#0B0C0D; --text2:#5A6169; --text3:#858C94;
+  --border:#DCE0E3; --border-soft:#EEF0F2; --border-strong:#000000;
+  --sage:#B2D8B4; --sage-ink:#436B48; --sage-soft:#ECF6ED;
+  --mist:#D6E1EB; --mist-ink:#6B869E; --mist-soft:#F2F6F9;
+  --neg:#A8413A; --neg-soft:#F0D7D5;
+  --ink-bg:#000000; --ink-line:#24282B; --ink-text:#FFFFFF; --ink-text2:#B4BAC0; --ink-text3:#858C94;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --display:'Abril Fatface',Georgia,serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --maxw:1520px; --gut:clamp(18px,3.4vw,52px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B0C0D; --surface:#16181A; --subtle:#1A1D1F;
+  --text:#FFFFFF; --text2:#B4BAC0; --text3:#858C94;
+  --border:#2B2F32; --border-soft:#232628; --border-strong:#4A5054;
+  --sage-ink:#B2D8B4; --sage-soft:#1C2A1E; --mist:#50657A; --mist-soft:#1A2027;
+  --neg:#E08A82; --neg-soft:#35211F;
+}}
+:root[data-theme="dark"]{
+  --bg:#0B0C0D; --surface:#16181A; --subtle:#1A1D1F;
+  --text:#FFFFFF; --text2:#B4BAC0; --text3:#858C94;
+  --border:#2B2F32; --border-soft:#232628; --border-strong:#4A5054;
+  --sage-ink:#B2D8B4; --sage-soft:#1C2A1E; --mist:#50657A; --mist-soft:#1A2027;
+  --neg:#E08A82; --neg-soft:#35211F;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--sage-ink);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.demo{font-family:var(--mono);font-size:10.5px;color:var(--text3);border:1px solid var(--border);padding:3px 7px;border-radius:2px}
+.page{display:none}
+.page.on{display:block}
+.view{display:none}
+.view.on{display:block}
+
+/* ---- nav ---- */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:env(safe-area-inset-top,0px);z-index:50}
+.nav .wrap{display:flex;align-items:center;gap:30px;padding-top:13px;padding-bottom:13px}
+.logo{display:flex;background:var(--ink-bg);padding:5px;gap:5px;flex:none;text-decoration:none}
+.logo span{font-family:var(--display);font-size:13px;letter-spacing:.14em;color:#0B0C0D;padding:7px 12px;line-height:1}
+.logo span:first-child{background:var(--mist)}.logo span:last-child{background:var(--sage)}
+.navlinks{display:flex;gap:26px;margin-left:10px}
+.navlinks a{font-size:15px;font-weight:600;text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
+.navlinks a.on{border-bottom-color:var(--text)}
+.navright{margin-left:auto;display:flex;align-items:center;gap:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:2px;font-weight:600;font-size:14px;padding:10px 18px;border:1px solid transparent}
+.btn-primary{background:var(--ink-bg);color:#fff;border-color:var(--ink-bg)}
+.btn-accent{background:var(--sage);color:#0B0C0D;border-color:var(--sage)}
+.btn-outline{border-color:var(--border-strong)}
+.btn-quiet{border-color:var(--border);background:var(--surface)}
+.btn-sm{padding:7px 12px;font-size:13px}
+
+/* ---- shared ticker ---- */
+.tickwrap{background:var(--ink-bg);color:var(--ink-text);display:flex;align-items:stretch;overflow:hidden}
+.ticklabel{background:var(--sage);color:#0B0C0D;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;padding:0 16px;flex:none;z-index:2}
+.tickview{overflow:hidden;flex:1}
+.tickrun{display:flex;gap:40px;padding:11px 0;white-space:nowrap;width:max-content;animation:scroll 60s linear infinite}
+.tickwrap:hover .tickrun,.tickwrap:focus-within .tickrun{animation-play-state:paused}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.tickrun{animation:none;overflow-x:auto}}
+.tickitem{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.tickitem .tcat{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--sage)}
+.tickitem .ttime{font-family:var(--mono);font-size:11px;color:var(--ink-text3)}
+.tickitem:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ---- shared search ---- */
+.searchwrap{position:relative}
+.search{display:flex;align-items:center;gap:13px;background:var(--surface);border:1.4px solid var(--border-strong);border-radius:2px;padding:14px 17px}
+.search input{flex:1;border:0;background:none;font-size:16px;color:var(--text);min-width:0;outline:none}
+.search input::placeholder{color:var(--text3)}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--border);background:var(--subtle);color:var(--text2);border-radius:3px;padding:4px 7px;white-space:nowrap}
+.clearbtn{display:none;color:var(--text3)}
+.clearbtn.on{display:flex}
+.suggest{position:absolute;inset-inline:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border);border-radius:4px;box-shadow:0 24px 60px -16px rgba(0,0,0,.18);padding:10px;z-index:30;display:none;max-height:60vh;overflow:auto}
+.suggest.open{display:block}
+.suggest .grp{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-weight:600;padding:10px 12px 6px}
+.suggest button{display:flex;width:100%;gap:10px;align-items:center;padding:9px 12px;border-radius:3px;font-size:14px}
+.suggest button:hover{background:var(--subtle)}
+.suggest .tp{font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:auto}
+
+/* ---- shared chips / controls / empty ---- */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--sage-soft);border:1px solid var(--sage);border-radius:2px;padding:4px 8px 4px 11px;font-size:12.5px;font-weight:500}
+.chip.clear{background:none;border-color:var(--border);color:var(--text2);padding:4px 11px}
+.chip .x{color:var(--sage-ink);display:flex}
+.sel{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:2px;padding:7px 10px 7px 12px}
+.sel span{font-size:12px;color:var(--text3)}
+.sel select{border:0;background:none;font:inherit;font-size:13.5px;font-weight:500;outline:none;color:var(--text)}
+.opt{display:flex;align-items:center;gap:9px;padding:5px 0;cursor:pointer;font-size:13.5px;color:var(--text2)}
+.opt input{appearance:none;width:16px;height:16px;border:1.3px solid var(--border);border-radius:2px;flex:none;display:grid;place-content:center;background:var(--surface)}
+.opt input:checked{background:var(--ink-bg);border-color:var(--ink-bg)}
+.opt input:checked::after{content:"";width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px)}
+.opt:has(input:checked){color:var(--text);font-weight:500}
+.opt .n{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--text3)}
+.empty{border:1px dashed var(--border);border-radius:4px;padding:56px 30px;text-align:center;background:var(--surface)}
+.empty h3{margin:0 0 7px;font-size:20px}
+.empty p{margin:0 0 18px;color:var(--text2)}
+.mobar{display:none;gap:10px;margin:16px 0}
+.scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60}
+.scrim.open{display:block}
+.readlink{font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;gap:6px;margin-top:2px}
+.tagrow{display:flex;flex-wrap:wrap;gap:7px}
+.tagrow button,.tagrow span{border:1px solid var(--border);border-radius:2px;padding:6px 11px;font-size:13px;background:var(--surface)}
+.tagrow button:hover{border-color:var(--border-strong)}
+.backbar{padding-top:22px}
+.backbar button{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.panel{border:1px solid var(--border);border-radius:4px;background:var(--surface);margin-bottom:16px}
+.panel>h2{margin:0;font-size:13px;font-weight:600;padding:14px 16px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.panel>h2 button{font-size:12px;font-weight:500;color:var(--text2);text-decoration:underline;text-underline-offset:3px}
+.pbody{padding:12px 16px 16px}
+.disc{font-size:11.5px;color:var(--text3);padding:10px 16px 14px;border-top:1px solid var(--border-soft);line-height:1.5}
+
+/* ---- shared sentiment / impact language ---- */
+.sent{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;white-space:nowrap}
+.sent .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.sent.pos .dot{background:var(--sage-ink)}.sent.pos{color:var(--sage-ink)}
+.sent.neg .dot{background:var(--neg)}.sent.neg{color:var(--neg)}
+.sent.neu .dot{background:var(--text3)}.sent.neu{color:var(--text3)}
+.imp{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;color:var(--text2);white-space:nowrap}
+.bars{display:flex;gap:2px;align-items:flex-end}
+.bars i{width:4px;background:var(--border);display:block;border-radius:1px}
+.bars i:nth-child(1){height:6px}.bars i:nth-child(2){height:10px}.bars i:nth-child(3){height:14px}
+.bars.l i:nth-child(1),.bars.m i:nth-child(-n+2),.bars.h i{background:var(--text)}
+.metarow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.vsep{width:1px;height:14px;background:var(--border)}
+.pos{color:var(--sage-ink)}.neg{color:var(--neg)}
+.cat{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+
+/* ---- shared tooltip ---- */
+.tip{position:fixed;z-index:200;max-width:280px;background:var(--ink-bg);color:#fff;font-size:12.5px;line-height:1.5;padding:11px 13px;border-radius:3px;box-shadow:0 16px 40px -12px rgba(0,0,0,.4);display:none}
+.tip.on{display:block}
+.tip b{display:block;font-family:var(--mono);font-size:11px;color:var(--sage);margin-bottom:5px;font-weight:500}
+
+/* ---- footer ---- */
+footer{background:var(--ink-bg);color:var(--ink-text2);padding:52px 0 30px}
+footer .c{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:36px}
+footer h4{color:var(--sage);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 13px}
+footer a,footer button{display:block;font-size:13.5px;padding:5px 0;text-decoration:none;color:var(--ink-text2)}
+footer a:hover,footer button:hover{color:#fff}
+footer .dz{border-top:1px solid var(--ink-line);margin-top:38px;padding-top:20px;font-size:12.5px;color:var(--ink-text3);max-width:96ch}
+
+/* =====================================================================
+   RESEARCH LIBRARY
+   ===================================================================== */
+#pgResearch .crumb{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text3);padding-top:26px}
+#pgResearch .crumb b{color:var(--text);font-weight:500}
+#pgResearch .crumb button{text-decoration:none;color:var(--text3)}
+#pgResearch .crumb button:hover{color:var(--text)}
+#pgResearch .phead{padding-top:18px;padding-bottom:34px;border-bottom:1px solid var(--border)}
+#pgResearch .phead h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,4.6vw,52px);line-height:1.08;letter-spacing:-.015em;margin:0 0 14px}
+#pgResearch .phead .lede{max-width:66ch;color:var(--text2);font-size:17px;margin:0}
+#pgResearch .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:28px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+#pgResearch .kpi{background:var(--surface);padding:17px 19px}
+#pgResearch .kpi .v{font-family:var(--mono);font-size:23px;font-weight:500;letter-spacing:-.02em;display:block}
+#pgResearch .kpi .l{font-size:12px;color:var(--text3);margin-top:3px;display:block}
+#pgResearch .demo-note{margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--text3)}
+#pgResearch .searchwrap{margin:28px 0 22px}
+#pgResearch .switch{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+#pgResearch .ptab{display:flex;align-items:center;gap:13px;border:1px solid var(--border);background:var(--surface);border-radius:3px;padding:15px 18px;transition:border-color .15s}
+#pgResearch .ptab:hover{border-color:var(--border-strong)}
+#pgResearch .ptab .ico{background:var(--sage-soft);border-radius:2px;padding:8px;display:flex;flex:none}
+#pgResearch .ptab .nm{font-weight:600;font-size:15px;display:block}
+#pgResearch .ptab .ct{font-family:var(--mono);font-size:11px;color:var(--text3);display:block;margin-top:1px}
+#pgResearch .ptab[aria-selected="true"]{background:var(--ink-bg);border-color:var(--ink-bg)}
+#pgResearch .ptab[aria-selected="true"] .nm{color:#fff}
+#pgResearch .ptab[aria-selected="true"] .ct{color:#9AA1A8}
+#pgResearch .ptab[aria-selected="true"] .ico{background:var(--sage)}
+#pgResearch .cols{display:grid;grid-template-columns:286px minmax(0,1fr);gap:40px;align-items:start;padding-bottom:80px}
+#pgResearch .sidebar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);max-height:calc(100vh - 140px);overflow-y:auto;border:1px solid var(--border);border-radius:4px;background:var(--surface);scrollbar-width:thin}
+#pgResearch .sidehead{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:2}
+#pgResearch .sidehead h2{margin:0;font-size:15px;font-weight:600}
+#pgResearch .sidehead button{font-size:13px;color:var(--text2);text-decoration:underline;text-underline-offset:3px}
+#pgResearch .fgroup{border-bottom:1px solid var(--border-soft)}
+#pgResearch .fgroup>button{display:flex;width:100%;align-items:center;justify-content:space-between;padding:13px 18px;font-weight:600;font-size:13px}
+#pgResearch .fgroup>button .chev{transition:transform .18s}
+#pgResearch .fgroup[data-open="false"] .chev{transform:rotate(-90deg)}
+#pgResearch .fgroup[data-open="false"] .fbody{display:none}
+#pgResearch .fbody{padding:0 18px 13px}
+#pgResearch .rangebox{padding:4px 0 2px}
+#pgResearch .rangebox label{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:7px}
+#pgResearch .rangebox label b{font-family:var(--mono);font-weight:500;color:var(--text)}
+#pgResearch input[type=range]{width:100%;accent-color:var(--sage-ink)}
+#pgResearch .sidefoot{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:13px 18px;display:flex;gap:10px}
+#pgResearch .sidefoot .btn{flex:1}
+#pgResearch .resbar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+#pgResearch .resbar h2{margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em}
+#pgResearch .resbar .count{font-family:var(--mono);font-size:13px;color:var(--text2);margin-top:3px}
+#pgResearch .resctl{margin-left:auto;display:flex;gap:10px;align-items:center}
+#pgResearch .vtoggle{display:flex;border:1px solid var(--border);border-radius:2px;overflow:hidden}
+#pgResearch .vtoggle button{padding:9px 12px;display:flex;background:var(--surface)}
+#pgResearch .vtoggle button[aria-pressed="true"]{background:var(--subtle)}
+#pgResearch .results{display:grid;gap:16px}
+#pgResearch .results.grid{grid-template-columns:repeat(3,1fr)}
+#pgResearch .results.list{grid-template-columns:1fr}
+#pgResearch .rcard{border:1px solid var(--border);border-radius:4px;background:var(--surface);padding:24px;display:flex;flex-direction:column;gap:14px;transition:border-color .15s,box-shadow .15s}
+#pgResearch .rcard:hover{border-color:var(--border-strong);box-shadow:0 8px 24px -8px rgba(0,0,0,.08)}
+#pgResearch .badge{display:inline-flex;border-radius:2px;overflow:hidden;align-self:flex-start;flex:none}
+#pgResearch .badge b,#pgResearch .badge i{font-style:normal;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:5px 8px;line-height:1.4}
+#pgResearch .badge b{background:var(--ink-bg);color:#fff}
+#pgResearch .badge i{background:var(--sage);color:#0B0C0D}
+#pgResearch .rcard h3{margin:0;font-size:18px;font-weight:600;line-height:1.35;letter-spacing:-.01em}
+#pgResearch .rcard p{margin:0;font-size:13.5px;color:var(--text2);line-height:1.6}
+#pgResearch .tags{display:flex;flex-wrap:wrap;gap:6px}
+#pgResearch .tags span{background:var(--mist-soft);border-radius:2px;padding:3px 8px;font-size:12px;color:var(--text2)}
+#pgResearch .meta{font-family:var(--mono);font-size:11px;color:var(--text3);display:flex;flex-wrap:wrap;gap:8px}
+#pgResearch .rfoot{display:flex;align-items:center;gap:12px;border-top:1px solid var(--border-soft);padding-top:14px;margin-top:auto}
+#pgResearch .rfoot .read{font-weight:600;font-size:14px;display:flex;align-items:center;gap:7px}
+#pgResearch .rfoot .save{margin-left:auto;display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:2px;padding:6px 11px;font-size:12.5px;font-weight:500}
+#pgResearch .rfoot .save[aria-pressed="true"]{background:var(--sage);border-color:var(--sage);color:#0B0C0D}
+#pgResearch .results.list .rcard{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:28px;align-items:center}
+#pgResearch .results.list .rcard .body{display:flex;flex-direction:column;gap:9px;min-width:0}
+#pgResearch .results.list .rcard .rfoot{border:0;margin:0;padding:0;flex-direction:column;align-items:stretch;gap:9px}
+#pgResearch .results.list .rcard .rfoot .save{margin:0;justify-content:center}
+#pgResearch .results.list .rcard .rfoot .read{background:var(--ink-bg);color:#fff;border-radius:2px;padding:10px 16px;justify-content:center;white-space:nowrap}
+#pgResearch .loadmore{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:14px}
+#pgResearch .pager{display:flex;gap:7px}
+#pgResearch .pager button{min-width:36px;height:36px;border:1px solid var(--border);border-radius:2px;font-size:13.5px;font-weight:500;background:var(--surface);text-align:center;display:flex;align-items:center;justify-content:center}
+#pgResearch .pager button[aria-current="true"]{background:var(--ink-bg);color:#fff;border-color:var(--ink-bg)}
+#pgResearch .mega{display:none;background:var(--surface);border:1px solid var(--border);border-radius:4px;box-shadow:0 24px 60px -16px rgba(0,0,0,.16);margin:22px 0 0;padding:28px 30px}
+#pgResearch .mega.open{display:block}
+#pgResearch .mega h2{font-family:var(--display);font-size:26px;font-weight:400;margin:0 0 6px}
+#pgResearch .mega p.lede2{margin:0 0 24px;color:var(--text2)}
+#pgResearch .mega-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+#pgResearch .mega-card{border:1px solid var(--border);border-radius:4px;background:var(--surface);padding:22px 20px;display:flex;flex-direction:column;gap:11px;transition:border-color .15s,background .15s}
+#pgResearch .mega-card:hover{border-color:var(--border-strong);background:var(--sage-soft)}
+#pgResearch .mega-card .top{display:flex;align-items:center;justify-content:space-between}
+#pgResearch .mega-card .ico{background:var(--sage-soft);border-radius:2px;padding:9px;display:flex}
+#pgResearch .mega-card .cnt{font-family:var(--mono);font-size:11px;color:var(--text3)}
+#pgResearch .mega-card h3{margin:0;font-size:19px;font-weight:600}
+#pgResearch .mega-card p{margin:0;font-size:13px;color:var(--text2);line-height:1.5}
+#pgResearch .dcols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:52px;align-items:start;padding:30px 0 90px}
+#pgResearch .dhead h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.9vw,44px);line-height:1.13;letter-spacing:-.015em;margin:14px 0 16px}
+#pgResearch .dhead .lede{font-size:18px;color:var(--text2);margin:0 0 20px;max-width:70ch}
+#pgResearch .byline{display:flex;flex-wrap:wrap;gap:14px;align-items:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:15px 0;font-size:13px;color:var(--text2)}
+#pgResearch .byline .av{width:34px;height:34px;border-radius:50%;background:var(--mist);flex:none}
+#pgResearch .sec{padding-top:36px}
+#pgResearch .sec h2{font-size:22px;font-weight:600;letter-spacing:-.01em;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--border-soft)}
+#pgResearch .sec p{margin:0 0 14px;max-width:72ch;color:var(--text2);font-size:15.5px}
+#pgResearch .sec ul{margin:0 0 14px;padding-left:20px;color:var(--text2);max-width:72ch}
+#pgResearch .sec li{margin-bottom:7px}
+#pgResearch .callout{background:var(--sage-soft);border-left:3px solid var(--sage-ink);padding:18px 22px;border-radius:0 3px 3px 0;margin:18px 0}
+#pgResearch .callout p{color:var(--text);margin:0}
+#pgResearch .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin:18px 0}
+#pgResearch .statgrid div{background:var(--surface);padding:16px}
+#pgResearch .statgrid .v{font-family:var(--mono);font-size:20px;font-weight:500;display:block}
+#pgResearch .statgrid .l{font-size:11.5px;color:var(--text3);display:block;margin-top:2px}
+#pgResearch .figure{border:1px solid var(--border);border-radius:4px;background:var(--surface);padding:20px;margin:18px 0}
+#pgResearch .figure figcaption{font-size:12px;color:var(--text3);margin-top:12px;font-family:var(--mono)}
+#pgResearch .figure svg{width:100%;height:auto;display:block}
+#pgResearch table.t{width:100%;border-collapse:collapse;font-size:13.5px;margin:18px 0}
+#pgResearch table.t th,#pgResearch table.t td{text-align:right;padding:11px 12px;border-bottom:1px solid var(--border-soft)}
+#pgResearch table.t th:first-child,#pgResearch table.t td:first-child{text-align:left}
+#pgResearch table.t thead th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--subtle)}
+#pgResearch table.t td:not(:first-child){font-family:var(--mono)}
+#pgResearch .tscroll{overflow-x:auto}
+#pgResearch .dpanel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px)}
+#pgResearch .dpanel .btn{width:100%;justify-content:flex-start;margin-bottom:9px}
+#pgResearch .toc a{display:block;font-size:13px;color:var(--text2);padding:5px 0;text-decoration:none}
+#pgResearch .toc a:hover{color:var(--text)}
+
+/* =====================================================================
+   NEWS INTELLIGENCE
+   ===================================================================== */
+#pgNews .catnav{background:var(--surface);border-bottom:1px solid var(--border);margin-bottom:0}
+#pgNews .catnav .inner{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+#pgNews .catnav .inner::-webkit-scrollbar{display:none}
+#pgNews .catnav button{white-space:nowrap;padding:13px 14px;font-size:14px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent}
+#pgNews .catnav button[aria-current="true"]{color:var(--text);font-weight:600;border-bottom-color:var(--text)}
+#pgNews .hero{padding:38px 0 30px;border-bottom:1px solid var(--border)}
+#pgNews .hero h1{font-family:var(--display);font-weight:400;font-size:clamp(32px,4.4vw,52px);line-height:1.1;letter-spacing:-.015em;margin:0 0 14px;max-width:16ch}
+#pgNews .hero .lede{max-width:62ch;color:var(--text2);font-size:17px;margin:0 0 26px}
+#pgNews .searchwrap{max-width:860px}
+#pgNews .breaking{display:flex;align-items:center;gap:16px;background:var(--ink-bg);color:#fff;border-radius:3px;padding:14px 18px;margin-top:22px;width:100%}
+#pgNews .breaking .lab{background:var(--neg-soft);color:#A8413A;font-size:10px;font-weight:600;letter-spacing:.14em;padding:4px 9px;border-radius:2px;flex:none}
+#pgNews .breaking .hl{font-weight:600;font-size:15px;flex:1;min-width:0}
+#pgNews .breaking .mt{font-family:var(--mono);font-size:11px;color:var(--ink-text3);white-space:nowrap}
+#pgNews .cols{display:grid;grid-template-columns:238px minmax(0,1fr) 318px;gap:32px;align-items:start;padding:30px 0 80px}
+#pgNews .railL,#pgNews .railR{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);max-height:calc(100vh - 140px);overflow-y:auto;scrollbar-width:thin}
+#pgNews .fgrp{border-bottom:1px solid var(--border-soft)}
+#pgNews .fgrp:last-child{border-bottom:0}
+#pgNews .fgrp>button{display:flex;width:100%;justify-content:space-between;align-items:center;padding:12px 16px;font-size:12.5px;font-weight:600}
+#pgNews .fgrp[data-open="false"] .fb{display:none}
+#pgNews .fgrp[data-open="false"] .chev{transform:rotate(-90deg)}
+#pgNews .chev{transition:transform .18s}
+#pgNews .fb{padding:0 16px 12px}
+#pgNews .ai{display:flex;flex-wrap:wrap;gap:6px}
+#pgNews .aichip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:2px;padding:4px 9px;font-size:12px;background:var(--surface)}
+#pgNews .aichip .ar{font-family:var(--mono);font-weight:500}
+#pgNews .aichip.up{border-color:var(--sage);background:var(--sage-soft)}
+#pgNews .aichip.up .ar{color:var(--sage-ink)}
+#pgNews .aichip.dn{border-color:var(--neg-soft);background:var(--neg-soft)}
+#pgNews .aichip.dn .ar{color:var(--neg)}
+#pgNews .aichip .str{display:flex;gap:2px;margin-left:2px}
+#pgNews .aichip .str i{width:3px;height:3px;border-radius:50%;background:var(--text3)}
+#pgNews .aichip.up .str i.on{background:var(--sage-ink)}
+#pgNews .aichip.dn .str i.on{background:var(--neg)}
+#pgNews .aichip .str i.on{background:var(--text)}
+#pgNews .secthead{display:flex;align-items:flex-end;gap:14px;margin:4px 0 16px}
+#pgNews .secthead h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
+#pgNews .secthead .cnt{font-family:var(--mono);font-size:12.5px;color:var(--text2)}
+#pgNews .secthead .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+#pgNews .feature{border:1px solid var(--border);border-radius:4px;background:var(--surface);overflow:hidden;margin-bottom:16px}
+#pgNews .feature .vis{height:200px;background:var(--mist-soft);border-bottom:1px solid var(--border);position:relative}
+#pgNews .feature .vis svg{position:absolute;inset:0;width:100%;height:100%}
+#pgNews .feature .in{padding:24px 26px 26px;display:flex;flex-direction:column;gap:13px}
+#pgNews .feature h3{margin:0;font-size:27px;font-weight:600;line-height:1.24;letter-spacing:-.015em}
+#pgNews .feature p{margin:0;color:var(--text2);font-size:15px;max-width:72ch}
+#pgNews .ncard{border:1px solid var(--border);border-radius:4px;background:var(--surface);padding:20px 22px;display:flex;flex-direction:column;gap:11px;transition:border-color .15s}
+#pgNews .ncard:hover{border-color:var(--border-strong)}
+#pgNews .ncard h3{margin:0;font-size:17px;font-weight:600;line-height:1.34}
+#pgNews .ncard p{margin:0;color:var(--text2);font-size:13.5px}
+#pgNews .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+#pgNews .feed{display:flex;flex-direction:column;gap:12px}
+#pgNews .src{font-family:var(--mono);font-size:11px;color:var(--text3)}
+#pgNews .mirow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-soft)}
+#pgNews .mirow:last-child{border-bottom:0}
+#pgNews .mirow .nm{font-size:13.5px}
+#pgNews .mirow .val{margin-left:auto;display:flex;align-items:center;gap:8px}
+#pgNews .gauge{width:64px;height:5px;background:var(--border-soft);border-radius:3px;position:relative;overflow:hidden}
+#pgNews .gauge b{position:absolute;top:0;bottom:0;display:block;border-radius:3px}
+#pgNews .topic{display:flex;flex-direction:column;gap:5px;padding:12px 0;border-bottom:1px solid var(--border-soft);width:100%}
+#pgNews .topic:last-child{border-bottom:0}
+#pgNews .topic .tg{font-weight:600;font-size:14.5px}
+#pgNews .topic .tm{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#pgNews .topic .tm .mono{font-size:11px;color:var(--text3)}
+#pgNews .trend{font-family:var(--mono);font-size:10.5px;color:var(--sage-ink)}
+#pgNews .hm{width:100%;border-collapse:collapse;font-size:11px}
+#pgNews .hm th{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);font-weight:500;padding:5px 3px;text-align:center}
+#pgNews .hm th:first-child{text-align:left}
+#pgNews .hm td{padding:3px}
+#pgNews .hm td:first-child{font-size:12px;color:var(--text2);padding-right:8px;white-space:nowrap}
+#pgNews .hm .cell{height:26px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--text)}
+#pgNews .acols{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:48px;align-items:start;padding:26px 0 90px}
+#pgNews .ahead h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.8vw,44px);line-height:1.14;letter-spacing:-.015em;margin:12px 0 14px}
+#pgNews .ahead .lede{font-size:18px;color:var(--text2);margin:0 0 18px;max-width:70ch}
+#pgNews .abyline{display:flex;flex-wrap:wrap;gap:14px;align-items:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;font-size:13px;color:var(--text2)}
+#pgNews .asec{padding-top:34px}
+#pgNews .asec h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:0 0 12px;padding-bottom:9px;border-bottom:1px solid var(--border-soft)}
+#pgNews .asec p{margin:0 0 13px;max-width:72ch;color:var(--text2);font-size:15.5px}
+#pgNews .whybox{background:var(--sage-soft);border-left:3px solid var(--sage-ink);padding:20px 24px;border-radius:0 3px 3px 0}
+#pgNews .whybox p{color:var(--text);margin:0;max-width:70ch}
+#pgNews .matrix{width:100%;border-collapse:collapse;font-size:14px}
+#pgNews .matrix th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);text-align:left;padding:10px 12px;background:var(--subtle);font-weight:500}
+#pgNews .matrix td{padding:13px 12px;border-bottom:1px solid var(--border-soft);vertical-align:top}
+#pgNews .matrix td.exp{color:var(--text2);font-size:13.5px}
+#pgNews .rr{display:grid;gap:12px}
+#pgNews .rrcard{border:1px solid var(--border);border-radius:4px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:7px}
+#pgNews .rrcard h4{margin:0;font-size:15.5px;font-weight:600;line-height:1.35}
+#pgNews .apanel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);display:flex;flex-direction:column;gap:0}
+#pgNews .apanel .btn{width:100%;justify-content:flex-start;margin-bottom:8px}
+#pgNews .thead{padding:28px 0 22px;border-bottom:1px solid var(--border)}
+#pgNews .thead h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,4vw,46px);margin:0 0 12px;letter-spacing:-.015em}
+#pgNews .tstats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-top:20px}
+#pgNews .tstats div{background:var(--surface);padding:16px 18px}
+#pgNews .tstats .v{font-family:var(--mono);font-size:21px;font-weight:500;display:block}
+#pgNews .tstats .l{font-size:11.5px;color:var(--text3);margin-top:2px;display:block}
+
+/* =====================================================================
+   responsive
+   ===================================================================== */
+@media (max-width:1280px){
+  #pgResearch .results.grid{grid-template-columns:repeat(2,1fr)}
+  #pgResearch .mega-grid{grid-template-columns:repeat(2,1fr)}
+  #pgResearch .dcols{grid-template-columns:minmax(0,1fr) 262px;gap:36px}
+  #pgNews .cols{grid-template-columns:220px minmax(0,1fr)}
+  #pgNews .railR{position:static;max-height:none;grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+  #pgNews .acols{grid-template-columns:minmax(0,1fr) 280px;gap:36px}
+}
+@media (max-width:980px){
+  .navlinks{display:none}
+  .mobar{display:flex}
+  #pgResearch .cols{grid-template-columns:1fr}
+  #pgResearch .sidebar{position:fixed;inset:0 auto 0 0;width:min(340px,86vw);max-height:none;z-index:70;border-radius:0;transform:translateX(-102%);transition:transform .22s ease;display:flex;flex-direction:column}
+  #pgResearch .sidebar.open{transform:none}
+  #pgResearch .sidebar .fscroll{overflow-y:auto;flex:1}
+  #pgResearch .switch{display:flex;overflow-x:auto;scrollbar-width:none;margin-inline:calc(var(--gut)*-1);padding-inline:var(--gut)}
+  #pgResearch .switch::-webkit-scrollbar{display:none}
+  #pgResearch .ptab{flex:0 0 220px}
+  #pgResearch .kpis{grid-template-columns:repeat(2,1fr)}
+  #pgResearch .dcols{grid-template-columns:1fr}
+  #pgResearch .dpanel{position:static;order:-1}
+  #pgResearch .statgrid{grid-template-columns:repeat(2,1fr)}
+  #pgNews .cols{grid-template-columns:1fr}
+  #pgNews .railL{position:fixed;inset:0 auto 0 0;width:min(330px,86vw);z-index:70;transform:translateX(-102%);transition:transform .22s ease;background:var(--surface);max-height:none;overflow-y:auto}
+  #pgNews .railL.open{transform:none}
+  #pgNews .railL .panel{margin:0;border:0;border-radius:0}
+  #pgNews .railR{grid-template-columns:1fr}
+  #pgNews .acols{grid-template-columns:1fr}
+  #pgNews .apanel{position:static;order:-1}
+  #pgNews .grid2{grid-template-columns:1fr}
+  #pgNews .tstats{grid-template-columns:repeat(2,1fr)}
+  footer .c{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:620px){
+  #pgResearch .results.grid{grid-template-columns:1fr}
+  #pgResearch .results.list .rcard{grid-template-columns:1fr;row-gap:14px}
+  #pgResearch .resctl{margin-left:0;width:100%}
+  #pgNews .feature h3{font-size:21px}
+  #pgNews .matrix td.exp{display:none}
+  .metarow{gap:10px}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <button class="logo" data-go="research" aria-label="Alt Ledger home"><span>ALT</span><span>LEDGER</span></button>
+    <nav class="navlinks">
+      <a href="#research" id="lnkResearch">Research</a>
+      <a href="#news" id="lnkNews">News</a>
+      <a href="#research">Our Clients</a><a href="#research">Our Team</a><a href="#research">About</a>
+    </nav>
+    <div class="navright">
+      <button id="globalSearch" aria-label="Search">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <a href="#research" style="font-weight:600;font-size:14px;text-decoration:none">Log in</a>
+      <button class="btn btn-primary">Get started</button>
+    </div>
+  </div>
+</header>
+
+<div class="tickwrap">
+  <div class="ticklabel">Top news</div>
+  <div class="tickview"><div class="tickrun" id="tickrun"></div></div>
+</div>
+
+<main>
+
+<!-- ============================ RESEARCH ============================ -->
+<div class="page" id="pgResearch">
+  <div class="view on" id="rLibrary">
+    <div class="wrap">
+      <div class="crumb"><button data-go="research">Home</button>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <button id="rOpenMega">Research</button>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <b id="rCrumbNow">Mutual Funds</b></div>
+
+      <div class="mega" id="rMega">
+        <h2>Research</h2>
+        <p class="lede2">Explore our research across investment products and strategies.</p>
+        <div class="mega-grid" id="rMegaGrid"></div>
+      </div>
+
+      <div class="phead">
+        <h1 id="rPTitle">Mutual Fund Research</h1>
+        <p class="lede" id="rPLede"></p>
+        <div class="kpis" id="rKpis"></div>
+        <p class="demo-note">Sample values for layout. Replace with live counts from the research database.</p>
+      </div>
+
+      <div class="searchwrap">
+        <div class="search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input id="rQ" type="search" autocomplete="off" aria-label="Search research">
+          <button class="clearbtn" id="rClearQ" aria-label="Clear search">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <span class="kbd">⌘ K</span>
+        </div>
+        <div class="suggest" id="rSuggest"></div>
+      </div>
+
+      <div class="switch" role="tablist" aria-label="Research category" id="rSwitch"></div>
+
+      <div class="mobar"><button class="btn btn-outline" id="rOpenFilters" style="flex:1">Filter and sort<span id="rMobCount" class="mono" style="font-size:12px"></span></button></div>
+
+      <div class="cols">
+        <aside class="sidebar" id="rSidebar" aria-label="Filter research">
+          <div class="sidehead"><h2>Filter research</h2><button id="rResetTop">Reset</button></div>
+          <div class="fscroll" id="rFilterBody"></div>
+          <div class="sidefoot">
+            <button class="btn btn-quiet" id="rResetBtn">Reset</button>
+            <button class="btn btn-primary" id="rApplyBtn">Apply filters</button>
+          </div>
+        </aside>
+        <section>
+          <div class="resbar">
+            <div><h2 id="rResTitle">Mutual Fund Research</h2><div class="count" id="rResCount"></div></div>
+            <div class="resctl">
+              <div class="sel"><span>Sort by</span>
+                <select id="rSort" aria-label="Sort research">
+                  <option value="latest">Latest</option><option value="read">Most read</option>
+                  <option value="relevant">Most relevant</option><option value="updated">Recently updated</option>
+                </select></div>
+              <div class="vtoggle" role="group" aria-label="View">
+                <button id="rVGrid" aria-pressed="true" aria-label="Grid view"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 4h7v7H4V4ZM13 4h7v7h-7V4ZM4 13h7v7H4v-7ZM13 13h7v7h-7v-7Z" stroke="currentColor" stroke-width="1.6"/></svg></button>
+                <button id="rVList" aria-pressed="false" aria-label="List view"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="chips" id="rChips"></div>
+          <div class="results grid" id="rResults"></div>
+          <div class="loadmore" id="rLoadmore"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <div class="view" id="rDetail"></div>
+</div>
+
+<!-- ============================ NEWS ============================ -->
+<div class="page" id="pgNews">
+  <div class="view on" id="nDash">
+    <div class="catnav"><div class="wrap"><div class="inner" id="nCatnav"></div></div></div>
+    <div class="wrap">
+      <section class="hero">
+        <h1>Market intelligence. Beyond the headlines.</h1>
+        <p class="lede">Track the economic, industry and company developments shaping markets, and understand their potential impact across asset classes.</p>
+        <div class="searchwrap">
+          <div class="search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <input id="nQ" type="search" autocomplete="off" placeholder="Search news, companies, sectors, economies or topics…" aria-label="Search news">
+            <span class="kbd">⌘ K</span>
+          </div>
+          <div class="suggest" id="nSuggest"></div>
+        </div>
+        <div id="nBreakingSlot"></div>
+      </section>
+
+      <div class="mobar"><button class="btn btn-outline" id="nOpenFilters" style="flex:1">Filters<span class="mono" id="nMobCount" style="font-size:12px"></span></button></div>
+
+      <div class="cols">
+        <aside class="railL" id="nRailL" aria-label="News filters">
+          <div class="panel">
+            <h2>Filter news<button id="nClearSide">Clear all</button></h2>
+            <div id="nFilters"></div>
+            <div style="padding:12px 16px;border-top:1px solid var(--border-soft)">
+              <button class="btn btn-primary btn-sm" style="width:100%" id="nApplyBtn">Apply filters</button>
+            </div>
+          </div>
+        </aside>
+
+        <section>
+          <div class="secthead">
+            <div><h2 id="nFeedTitle">Top news</h2><div class="cnt" id="nFeedCount"></div></div>
+            <div class="right"><div class="sel"><span>Sort</span>
+              <select id="nSort" aria-label="Sort news">
+                <option value="time">Latest</option><option value="impact">Highest impact</option><option value="source">Source</option>
+              </select></div></div>
+          </div>
+          <div class="chips" id="nChips"></div>
+          <div id="nFeatured"></div>
+          <div class="grid2" id="nTopgrid"></div>
+          <div class="secthead" id="nLatestHead"><div><h2>Latest news</h2><div class="cnt" id="nLatestCount"></div></div></div>
+          <div class="feed" id="nFeed"></div>
+          <div style="margin-top:22px;display:flex;justify-content:center"><button class="btn btn-outline" id="nMore">Load more news</button></div>
+        </section>
+
+        <aside class="railR">
+          <div class="panel"><h2>Market impact today <span class="demo">Demo</span></h2>
+            <div class="pbody"><div id="nMarketImpact"></div></div>
+            <p class="disc">News-based sentiment indicator, aggregated from the articles currently in view. Not an investment recommendation.</p>
+          </div>
+          <div class="panel"><h2>Trending topics</h2><div class="pbody" id="nTrending"></div></div>
+          <div class="panel"><h2>Sentiment heatmap</h2><div class="pbody"><div id="nHeatmap"></div></div>
+            <p class="disc">Aggregated sentiment from recent news by asset and region. Darker cells carry more weight.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <div class="view" id="nArticle"></div>
+  <div class="view" id="nTopic"></div>
+</div>
+
+</main>
+
+<div class="scrim" id="scrim"></div>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<footer>
+  <div class="wrap">
+    <div class="c">
+      <div><button class="logo" data-go="research" style="display:inline-flex"><span>ALT</span><span>LEDGER</span></button>
+        <p style="margin:16px 0 0;font-size:14px;max-width:32ch">Independent research. Smarter investing.</p></div>
+      <div><h4>Research</h4>
+        <button data-goprod="mf">Mutual funds</button><button data-goprod="pms">PMS</button>
+        <button data-goprod="aif">AIF</button><button data-goprod="oth">Other funds</button></div>
+      <div><h4>News</h4>
+        <button data-gonews="global">Global economy</button><button data-gonews="india">Indian economy</button>
+        <button data-gonews="industry">Industry and sector</button><button data-gonews="financial">Financial sector</button>
+        <button data-gonews="companies">Companies</button></div>
+      <div><h4>Legal</h4><a href="#research">Disclaimer</a><a href="#research">Privacy policy</a><a href="#research">Terms of use</a><a href="#research">Methodology</a></div>
+    </div>
+    <p class="dz">Every fund name, manager, headline, source attribution, performance figure, sentiment score, impact rating and asset-impact estimate on this site is demo data created to demonstrate the interface. Nothing here is real-time news, and none of it is investment advice.</p>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   SHARED
+   ===================================================================== */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ARROW='<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const XICO='<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2 2 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const D=id=>document.getElementById(id);
+const all=(s,r)=>[...(r||document).querySelectorAll(s)];
+const ago=m=>m<60?m+' min ago':(m<1440?Math.floor(m/60)+' hr ago':Math.floor(m/1440)+' d ago');
+const fmtDate=d=>new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+
+const ICO={
+  mf:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="#436B48" stroke-width="1.8" stroke-linecap="round" fill="none"/>',
+  pms:'<path d="m12 3 9 5-9 5-9-5 9-5ZM3 14l9 5 9-5" stroke="#436B48" stroke-width="1.8" stroke-linejoin="round" fill="none"/>',
+  aif:'<path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21" stroke="#436B48" stroke-width="1.8" stroke-linejoin="round" fill="none"/>',
+  oth:'<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7l-4-4ZM14 3v4h4M9 13h6M9 17h4" stroke="#436B48" stroke-width="1.8" stroke-linejoin="round" fill="none"/>'
+};
+const svgIco=(k,s)=>'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" aria-hidden="true">'+ICO[k]+'</svg>';
+
+/* ---- router ---- */
+function goPage(p){
+  D('pgResearch').classList.toggle('on',p==='research');
+  D('pgNews').classList.toggle('on',p==='news');
+  D('lnkResearch').classList.toggle('on',p==='research');
+  D('lnkNews').classList.toggle('on',p==='news');
+  if(location.hash!=='#'+p) history.replaceState(null,'','#'+p);
+  closeAllDrawers();
+}
+function closeAllDrawers(){
+  D('scrim').classList.remove('open');
+  D('rSidebar').classList.remove('open');
+  D('nRailL').classList.remove('open');
+}
+window.addEventListener('hashchange',()=>{
+  const h=location.hash.replace('#','');
+  if(h==='news'||h==='research'){goPage(h);window.scrollTo({top:0});}
+});
+all('[data-go]').forEach(b=>b.addEventListener('click',()=>{goPage(b.dataset.go);window.scrollTo({top:0});}));
+D('lnkResearch').addEventListener('click',e=>{e.preventDefault();goPage('research');window.scrollTo({top:0});});
+D('lnkNews').addEventListener('click',e=>{e.preventDefault();goPage('news');window.scrollTo({top:0});});
+D('scrim').addEventListener('click',closeAllDrawers);
+D('globalSearch').addEventListener('click',()=>{
+  const onNews=D('pgNews').classList.contains('on');
+  (onNews?D('nQ'):D('rQ')).focus();
+});
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){
+    e.preventDefault();
+    const onNews=D('pgNews').classList.contains('on');
+    (onNews?D('nQ'):D('rQ')).focus();
+  }
+});
+
+/* ---- shared tooltip ---- */
+function hideTip(){D('tip').classList.remove('on');}
+document.addEventListener('scroll',hideTip,{passive:true});
+document.addEventListener('click',e=>{if(!e.target.closest('.aichip'))hideTip();});
+
+/* =====================================================================
+   RESEARCH MODULE
+   ===================================================================== */
+const RESEARCH=(function(){
+const PRODUCTS={
+  mf:{key:'mf',name:'Mutual Funds',crumb:'Mutual Funds',title:'Mutual Fund Research',
+    lede:'Independent, data-driven research and analysis of mutual fund strategies, portfolios, managers and performance.',
+    blurb:'Research, analysis and evaluation of mutual fund strategies.',
+    kpis:[['125+','Research reports'],['500+','Funds covered'],['20+','Categories'],['Daily','Updated']],
+    searchPh:'Search mutual funds, fund managers, strategies or research reports…',
+    suggestions:['Large cap funds','Flexi cap funds','Debt funds','Fund manager research','Equity research','Balanced advantage']},
+  pms:{key:'pms',name:'PMS',crumb:'PMS',title:'PMS Research',
+    lede:'Independent research on portfolio management strategies, managers, performance and portfolio construction.',
+    blurb:'Deep research on portfolio management strategies and managers.',
+    kpis:[['68+','Research reports'],['140+','Strategies covered'],['9','Strategy types'],['Monthly','Updated']],
+    searchPh:'Search PMS strategies, portfolio managers or research reports…',
+    suggestions:['Small cap PMS','Concentrated strategies','Manager track record','Alpha consistency','Multi cap PMS','Drawdown analysis']},
+  aif:{key:'aif',name:'AIF',crumb:'AIF',title:'AIF Research',
+    lede:'Research and intelligence across alternative investment strategies, fund managers and private markets.',
+    blurb:'Research on alternative investment funds, strategies and managers.',
+    kpis:[['54+','Research reports'],['90+','Funds covered'],['3','AIF categories'],['Quarterly','Updated']],
+    searchPh:'Search AIFs, strategies, vintages or research reports…',
+    suggestions:['Private credit','Category II AIF','Venture capital','Vintage analysis','Long/short equity','Real assets']},
+  oth:{key:'oth',name:'Other Funds',crumb:'Other Funds',title:'Other Investment Products',
+    lede:'Research covering ETFs, REITs, InvITs, bonds and other investment products.',
+    blurb:'Research covering ETFs, REITs, InvITs, bonds and other investment products.',
+    kpis:[['41+','Research reports'],['200+','Instruments covered'],['5','Product groups'],['Weekly','Updated']],
+    searchPh:'Search ETFs, REITs, InvITs, bonds or research reports…',
+    suggestions:['Indian REITs','Gold ETFs','Sovereign gold bonds','InvIT yields','Duration risk','International funds']}
+};
+const FILTERS={
+  mf:[
+    {id:'fundType',label:'Fund type',open:true,opts:[['equity','Equity'],['debt','Debt'],['hybrid','Hybrid'],['solution','Solution oriented'],['index','Index funds'],['etf','ETFs'],['other','Other']]},
+    {id:'marketCap',label:'Market capitalisation',open:true,opts:[['large','Large cap'],['mid','Mid cap'],['small','Small cap'],['largemid','Large and mid cap'],['flexi','Flexi cap'],['multi','Multi cap']]},
+    {id:'style',label:'Investment style',opts:[['value','Value'],['growth','Growth'],['blend','Blend'],['dividend','Dividend yield']]},
+    {id:'strategy',label:'Strategy',opts:[['thematic','Thematic'],['sectoral','Sectoral'],['contra','Contra'],['focused','Focused'],['elss','ELSS']]},
+    {id:'debtCat',label:'Debt category',opts:[['corporate','Corporate bond'],['gsec','Government securities'],['bankingpsu','Banking and PSU'],['credit','Credit risk'],['dynamic','Dynamic bond'],['short','Short duration'],['medium','Medium duration'],['long','Long duration'],['liquid','Liquid'],['money','Money market']]},
+    {id:'hybridCat',label:'Hybrid category',opts:[['aggressive','Aggressive hybrid'],['conservative','Conservative hybrid'],['balancedadv','Balanced advantage'],['multiasset','Multi asset allocation'],['equitysavings','Equity savings'],['arbitrage','Arbitrage']]},
+    {id:'__perf',label:'Performance and risk',open:true,ranges:[
+      {id:'cagr3',label:'3Y CAGR at least',min:0,max:25,step:1,unit:'%'},
+      {id:'sharpe',label:'Sharpe ratio at least',min:0,max:2,step:0.1,unit:''}]},
+    {id:'__fund',label:'Fund characteristics',ranges:[
+      {id:'aum',label:'AUM at least',min:0,max:30000,step:1000,unit:' Cr'},
+      {id:'mgrExp',label:'Manager experience at least',min:0,max:25,step:1,unit:' yrs'}]}
+  ],
+  pms:[
+    {id:'strategy',label:'Strategy',open:true,opts:[['large','Large cap'],['mid','Mid cap'],['small','Small cap'],['multi','Multi cap'],['flexi','Flexi cap'],['value','Value'],['growth','Growth'],['special','Special situations'],['thematic','Thematic']]},
+    {id:'portfolioStyle',label:'Portfolio style',open:true,opts:[['concentrated','Concentrated'],['diversified','Diversified'],['highgrowth','High growth'],['value','Value'],['quality','Quality']]},
+    {id:'risk',label:'Risk profile',opts:[['low','Low'],['moderate','Moderate'],['high','High']]},
+    {id:'__perf',label:'Performance and risk',open:true,ranges:[
+      {id:'cagr3',label:'3Y CAGR at least',min:0,max:30,step:1,unit:'%'},
+      {id:'alpha',label:'Alpha at least',min:0,max:12,step:1,unit:'%'},
+      {id:'sharpe',label:'Sharpe ratio at least',min:0,max:2,step:0.1,unit:''}]},
+    {id:'__pc',label:'Portfolio characteristics',ranges:[
+      {id:'aum',label:'AUM at least',min:0,max:6000,step:250,unit:' Cr'},
+      {id:'holdings',label:'Holdings at least',min:0,max:60,step:5,unit:''}]}
+  ],
+  aif:[
+    {id:'aifCat',label:'AIF category',open:true,opts:[['cat1','Category I'],['cat2','Category II'],['cat3','Category III']]},
+    {id:'strategy',label:'Strategy',open:true,opts:[['pe','Private equity'],['vc','Venture capital'],['credit','Private credit'],['re','Real estate'],['infra','Infrastructure'],['special','Special situations'],['ls','Long/short equity'],['multi','Multi strategy']]},
+    {id:'__perf',label:'Performance',open:true,ranges:[
+      {id:'irr',label:'IRR at least',min:0,max:30,step:1,unit:'%'},
+      {id:'moic',label:'MOIC at least',min:0,max:3,step:0.1,unit:'x'}]},
+    {id:'__fund',label:'Fund characteristics',ranges:[
+      {id:'vintage',label:'Vintage from',min:2014,max:2026,step:1,unit:''},
+      {id:'size',label:'Fund size at least',min:0,max:4000,step:250,unit:' Cr'}]}
+  ],
+  oth:[
+    {id:'group',label:'Product group',open:true,opts:[['etf','ETFs'],['reit','REITs'],['invit','InvITs'],['bond','Bonds'],['other','Other products']]},
+    {id:'sub',label:'Sub category',open:true,opts:[['equityetf','Equity ETFs'],['debtetf','Debt ETFs'],['goldetf','Gold ETFs'],['intletf','International ETFs'],['commercial','Commercial'],['diversified','Diversified'],['infra','Infrastructure'],['energy','Energy'],['gsec','Government bonds'],['corporate','Corporate bonds'],['taxfree','Tax free bonds'],['sgb','Sovereign gold bonds'],['structured','Structured products'],['fof','Fund of funds'],['intl','International funds']]},
+    {id:'__perf',label:'Yield and return',open:true,ranges:[{id:'yield',label:'Yield at least',min:0,max:10,step:0.5,unit:'%'}]}
+  ]
+};
+let UID=0;
+const R=(product,cat,title,desc,tags,date,mins,author,facets,reads)=>({id:'r'+(++UID),product,cat,title,desc,tags,date,mins,author,facets,reads});
+const REPORTS=[
+R('mf','Large cap','Large Cap Funds: Performance Beyond the Benchmark','Performance persistence, downside protection and benchmark-relative returns across large-cap funds, after costs.',['Large cap','Equity','Performance','Risk'],'2026-10-06',8,'Head of MF Research',{fundType:['equity'],marketCap:['large'],style:['blend'],cagr3:13.1,sharpe:0.88,aum:26780,mgrExp:18},4820),
+R('mf','Mid cap','Mid Cap Funds: Balancing Growth and Valuation','Where mid-cap earnings growth has justified its premium, and where multiple expansion has done the work instead.',['Mid cap','Equity','Valuation'],'2026-10-02',11,'Head of MF Research',{fundType:['equity'],marketCap:['mid'],style:['growth'],cagr3:19.4,sharpe:1.02,aum:14200,mgrExp:14},3910),
+R('mf','Small cap','Small Cap Funds: Return Potential vs Drawdown Risk','A drawdown-first view of small-cap investing: recovery periods, liquidity constraints and capacity limits.',['Small cap','Equity','Risk','Drawdown'],'2026-09-28',13,'Quantitative Research',{fundType:['equity'],marketCap:['small'],style:['growth'],cagr3:23.8,sharpe:0.96,aum:9400,mgrExp:11},5210),
+R('mf','Flexi cap','Flexi Cap Funds: Understanding Allocation Flexibility','Do flexi-cap managers actually use their mandate? Allocation drift, timing evidence and the cost of standing still.',['Flexi cap','Equity','Allocation'],'2026-09-24',9,'Head of MF Research',{fundType:['equity'],marketCap:['flexi'],style:['blend'],cagr3:16.2,sharpe:0.94,aum:18430,mgrExp:16},3380),
+R('mf','Corporate bond','Corporate Bond Funds: Yield, Credit Quality and Risk','Spread compensation across rating buckets, and what accrual strategies look like when credit cycles turn.',['Debt','Credit','Yield'],'2026-09-19',10,'Fixed Income Research',{fundType:['debt'],debtCat:['corporate'],cagr3:7.4,sharpe:1.31,aum:21300,mgrExp:20},2140),
+R('mf','Government securities','Government Securities Funds: Duration and Interest Rate Risk','Modified duration, convexity and the real behaviour of G-Sec funds across rate cycles since 2014.',['Debt','Duration','Rates'],'2026-09-15',12,'Fixed Income Research',{fundType:['debt'],debtCat:['gsec','long'],cagr3:6.9,sharpe:0.72,aum:8600,mgrExp:22},1890),
+R('mf','Balanced advantage','Balanced Advantage Funds: Does Dynamic Allocation Add Value?','Testing dynamic allocation models against a static 65/35 benchmark through three drawdowns.',['Hybrid','Allocation','Risk'],'2026-09-10',14,'Quantitative Research',{fundType:['hybrid'],hybridCat:['balancedadv'],cagr3:11.8,sharpe:1.14,aum:31200,mgrExp:17},4410),
+R('mf','Thematic','Thematic Funds: Concentration, Cyclicality and Risk','Why thematic returns cluster, how investor timing erodes them, and what position sizing is defensible.',['Thematic','Equity','Concentration'],'2026-09-05',9,'Head of MF Research',{fundType:['equity'],strategy:['thematic','sectoral'],cagr3:21.1,sharpe:0.81,aum:6800,mgrExp:9},3650),
+R('mf','Index','Index Funds and Tracking Error: What You Actually Pay','Decomposing the gap between index return and investor return across Nifty, Sensex and factor indices.',['Index','Costs','Tracking error'],'2026-08-30',7,'Quantitative Research',{fundType:['index','etf'],marketCap:['large'],cagr3:12.6,sharpe:0.85,aum:19800,mgrExp:12},2980),
+R('mf','ELSS','ELSS Funds: Lock-in, Behaviour and Long-Run Outcomes','What the three-year lock-in does to investor behaviour, and whether it shows up in realised returns.',['ELSS','Equity','Tax'],'2026-08-26',8,'Head of MF Research',{fundType:['equity'],strategy:['elss'],marketCap:['multi'],cagr3:15.3,sharpe:0.91,aum:11400,mgrExp:15},2210),
+R('mf','Multi cap','Multi Cap Funds After the Mandate Change','How the 25/25/25 allocation rule reshaped portfolios, liquidity and risk in the multi-cap category.',['Multi cap','Equity','Regulation'],'2026-08-20',10,'Head of MF Research',{fundType:['equity'],marketCap:['multi'],style:['blend'],cagr3:17.6,sharpe:0.99,aum:13100,mgrExp:13},1760),
+R('mf','Arbitrage','Arbitrage Funds: Spreads, Taxation and Cash Alternatives','When arbitrage spreads compensate for the complexity, and when liquid funds are the honest answer.',['Hybrid','Arbitrage','Cash'],'2026-08-14',6,'Fixed Income Research',{fundType:['hybrid'],hybridCat:['arbitrage'],cagr3:6.4,sharpe:1.52,aum:24600,mgrExp:19},1420),
+R('mf','Conservative hybrid','Conservative Hybrid Funds for Income-Oriented Portfolios','Equity participation at the margin: what a 20% equity sleeve adds, and what it costs in drawdown.',['Hybrid','Income','Risk'],'2026-08-08',8,'Fixed Income Research',{fundType:['hybrid'],hybridCat:['conservative'],cagr3:8.6,sharpe:1.08,aum:5200,mgrExp:16},980),
+R('mf','Value','Value Funds: Patience, Drawdown and the Cost of Waiting','Rolling-return evidence on how long value has asked investors to wait, and how many stayed.',['Value','Equity','Behaviour'],'2026-08-01',12,'Quantitative Research',{fundType:['equity'],style:['value'],marketCap:['flexi'],cagr3:18.2,sharpe:0.93,aum:7900,mgrExp:21},2640),
+R('pms','Performance','PMS Performance Review: Alpha, Consistency and Drawdown','Three-year alpha decomposed into selection, allocation and leverage, with persistence tested year on year.',['Alpha','Consistency','Drawdown'],'2026-10-04',12,'Head of PMS Research',{strategy:['multi'],portfolioStyle:['diversified'],risk:['moderate'],cagr3:21.4,alpha:6.2,sharpe:1.18,aum:4820,holdings:28},3120),
+R('pms','Portfolio construction','Concentrated vs Diversified PMS Strategies','Does holding 18 stocks beat holding 45? Position sizing, idiosyncratic risk and survivorship in Indian PMS.',['Concentration','Risk','Construction'],'2026-09-29',14,'Head of PMS Research',{strategy:['flexi'],portfolioStyle:['concentrated'],risk:['high'],cagr3:24.1,alpha:8.4,sharpe:1.06,aum:2140,holdings:18},2870),
+R('pms','Small cap','Small Cap PMS Strategies: Risk and Return Analysis','Capacity, liquidity and impact cost in small-cap PMS, with realistic assumptions about exit.',['Small cap','Liquidity','Risk'],'2026-09-22',11,'Quantitative Research',{strategy:['small'],portfolioStyle:['highgrowth'],risk:['high'],cagr3:27.8,alpha:9.1,sharpe:0.98,aum:980,holdings:24},3540),
+R('pms','Manager','PMS Manager Track Record Analysis','Separating the manager from the mandate: attribution across firm changes, team churn and strategy drift.',['Manager','Attribution','Due diligence'],'2026-09-16',16,'Head of PMS Research',{strategy:['multi'],portfolioStyle:['quality'],risk:['moderate'],cagr3:19.3,alpha:4.8,sharpe:1.22,aum:3400,holdings:32},2410),
+R('pms','Quality','Quality PMS Strategies Through a Full Cycle','What quality investing gave up in the 2023 rally, and what it protected in the drawdown that followed.',['Quality','Cycle','Drawdown'],'2026-09-09',10,'Head of PMS Research',{strategy:['large'],portfolioStyle:['quality'],risk:['low'],cagr3:16.7,alpha:3.1,sharpe:1.34,aum:5600,holdings:26},1930),
+R('pms','Value','Value PMS: Rerating, Mean Reversion and Holding Period','How much of value PMS return came from earnings, and how much from multiples moving back.',['Value','Valuation','Mean reversion'],'2026-09-02',13,'Quantitative Research',{strategy:['value'],portfolioStyle:['value'],risk:['moderate'],cagr3:22.6,alpha:7.3,sharpe:1.09,aum:1760,holdings:35},1650),
+R('pms','Special situations','Special Situations PMS: Event Risk and Realised Outcomes','Merger arbitrage, demergers and restructurings — hit rates, timelines and what went wrong.',['Special situations','Event','Risk'],'2026-08-25',15,'Head of PMS Research',{strategy:['special'],portfolioStyle:['concentrated'],risk:['high'],cagr3:18.9,alpha:5.6,sharpe:0.87,aum:740,holdings:15},1280),
+R('pms','Fees','PMS Fee Structures: What Performance Fees Actually Cost','Hurdle rates, high-water marks and catch-up clauses modelled across realistic return paths.',['Fees','Structure','Costs'],'2026-08-18',9,'Head of PMS Research',{strategy:['multi'],portfolioStyle:['diversified'],risk:['moderate'],cagr3:17.2,alpha:2.9,sharpe:1.11,aum:2900,holdings:30},2080),
+R('pms','Mid cap','Mid Cap PMS: Where Managers Add Value','Attribution evidence on stock selection versus sector positioning in mid-cap PMS strategies.',['Mid cap','Attribution','Alpha'],'2026-08-11',11,'Quantitative Research',{strategy:['mid'],portfolioStyle:['highgrowth'],risk:['high'],cagr3:25.3,alpha:8.9,sharpe:1.02,aum:1340,holdings:22},1840),
+R('pms','Thematic','Thematic PMS Strategies: Timing and Concentration Risk','Theme-led PMS portfolios tested against their own launch timing, not just their benchmark.',['Thematic','Timing','Risk'],'2026-08-04',10,'Head of PMS Research',{strategy:['thematic'],portfolioStyle:['concentrated'],risk:['high'],cagr3:20.8,alpha:4.2,sharpe:0.79,aum:620,holdings:19},1390),
+R('aif','Private credit','Indian Private Credit: Risk, Yield and Opportunity','Mapping the credit stack, security structures and realistic loss assumptions behind headline Category II yields.',['Private credit','Category II','Risk'],'2026-10-05',14,'Head of AIF Research',{aifCat:['cat2'],strategy:['credit'],irr:14.8,moic:1.4,vintage:2021,size:1260},2960),
+R('aif','Structure','Category II AIFs: Understanding the Investment Structure','Drawdowns, capital calls, waterfall mechanics and what the PPM actually commits the manager to.',['Category II','Structure','Terms'],'2026-09-27',12,'Head of AIF Research',{aifCat:['cat2'],strategy:['pe','credit'],irr:12.4,moic:1.3,vintage:2022,size:900},2180),
+R('aif','Private equity','Private Equity in India: Sector and Vintage Analysis','Dispersion by vintage year and sector, and why median IRR hides most of what matters.',['Private equity','Vintage','Dispersion'],'2026-09-20',18,'Head of AIF Research',{aifCat:['cat2'],strategy:['pe'],irr:19.2,moic:2.1,vintage:2019,size:3200},2740),
+R('aif','Manager','AIF Manager Track Record Analysis','Assessing managers without mark-to-market comfort: DPI, realised exits and the gap to reported NAV.',['Manager','DPI','Due diligence'],'2026-09-13',15,'Head of AIF Research',{aifCat:['cat2'],strategy:['pe','vc'],irr:16.5,moic:1.8,vintage:2020,size:1800},2050),
+R('aif','Venture capital','Venture Capital Funds: Power Laws and Realistic Expectations','What loss ratios and outlier dependence mean for portfolio construction at the LP level.',['Venture capital','Power law','Risk'],'2026-09-06',16,'Head of AIF Research',{aifCat:['cat1'],strategy:['vc'],irr:22.7,moic:2.4,vintage:2018,size:1450},3180),
+R('aif','Long/short','Category III Long/Short Funds: Net Exposure and Drawdown','How net exposure management translated into realised drawdown through two corrections.',['Category III','Long/short','Drawdown'],'2026-08-29',13,'Quantitative Research',{aifCat:['cat3'],strategy:['ls'],irr:12.6,moic:1.5,vintage:2021,size:980},2320),
+R('aif','Real assets','Real Estate AIFs: Underwriting Assumptions and Exit Risk','Testing residual-value and absorption assumptions in Indian real estate funds against delivered outcomes.',['Real estate','Underwriting','Exit'],'2026-08-22',17,'Head of AIF Research',{aifCat:['cat2'],strategy:['re'],irr:15.1,moic:1.6,vintage:2019,size:2100},1670),
+R('aif','Infrastructure','Infrastructure AIFs: Cash Yield and Concession Risk','Concession lengths, counterparty quality and the durability of distribution yields.',['Infrastructure','Yield','Risk'],'2026-08-15',12,'Head of AIF Research',{aifCat:['cat1'],strategy:['infra'],irr:13.4,moic:1.4,vintage:2020,size:2650},1240),
+R('aif','Multi strategy','Multi Strategy AIFs: Does Blending Reduce Risk?','Correlation evidence on whether multi-strategy vehicles diversify or simply average.',['Multi strategy','Correlation','Risk'],'2026-08-07',11,'Quantitative Research',{aifCat:['cat3'],strategy:['multi'],irr:11.8,moic:1.3,vintage:2022,size:720},1480),
+R('aif','Terms','AIF Fee Terms: Carry, Catch-Up and Net-to-LP Outcomes','Modelling carried interest across European and American waterfalls at realistic gross returns.',['Terms','Carry','Fees'],'2026-07-30',14,'Head of AIF Research',{aifCat:['cat2'],strategy:['pe'],irr:17.3,moic:1.9,vintage:2021,size:1900},1920),
+R('oth','REITs','Indian REITs: Yield, Valuation and Growth','Distribution yield versus NAV growth, occupancy trends and the rate sensitivity of listed Indian REITs.',['REIT','Yield','Valuation'],'2026-10-03',11,'Head of Research',{group:['reit'],sub:['commercial','diversified'],yield:6.4},2410),
+R('oth','ETFs','Gold ETFs vs Physical Gold','Total cost of ownership, tracking difference, liquidity and tax treatment compared honestly.',['Gold','ETF','Costs'],'2026-09-26',7,'Quantitative Research',{group:['etf'],sub:['goldetf'],yield:0},3290),
+R('oth','Bonds','Government Bonds: Understanding Duration Risk','A plain-language guide to duration, convexity and what a 100 basis point move does to your capital.',['Bonds','Duration','Rates'],'2026-09-18',9,'Fixed Income Research',{group:['bond'],sub:['gsec'],yield:6.9},2760),
+R('oth','InvITs','Indian InvITs: Income and Infrastructure Exposure','Cash flow durability, leverage covenants and the difference between yield and return.',['InvIT','Income','Infrastructure'],'2026-09-11',12,'Head of Research',{group:['invit'],sub:['infra','energy'],yield:8.2},1840),
+R('oth','Bonds','Sovereign Gold Bonds at Maturity: What Investors Realised','Realised returns across SGB tranches reaching maturity, including the interest component.',['SGB','Gold','Returns'],'2026-09-04',8,'Fixed Income Research',{group:['bond'],sub:['sgb'],yield:2.5},2130),
+R('oth','ETFs','International ETFs and Funds: Currency, Cost and Access','Rupee depreciation as a return driver, plus the practical limits on overseas allocation.',['International','Currency','ETF'],'2026-08-28',10,'Quantitative Research',{group:['etf','other'],sub:['intletf','intl'],yield:1.2},1960),
+R('oth','Bonds','Tax-Free Bonds: Yield Equivalence Across Tax Brackets','Pre-tax equivalent yields by bracket, plus secondary-market liquidity realities.',['Bonds','Tax','Yield'],'2026-08-21',6,'Fixed Income Research',{group:['bond'],sub:['taxfree'],yield:5.6},1280),
+R('oth','Other','Structured Products: Payoff Design and Hidden Costs','Decomposing principal-protected notes into their option components and pricing the embedded spread.',['Structured','Options','Costs'],'2026-08-13',15,'Quantitative Research',{group:['other'],sub:['structured'],yield:0},1540),
+R('oth','ETFs','Debt ETFs and Target Maturity Funds','Roll-down mechanics, credit composition and why maturity-matched investing suits some goals.',['Debt ETF','Target maturity','Rates'],'2026-08-06',9,'Fixed Income Research',{group:['etf'],sub:['debtetf'],yield:7.1},1120),
+R('oth','Other','Fund of Funds: Double Fees or Genuine Access?','When an extra layer of cost buys access that an investor could not otherwise obtain.',['Fund of funds','Fees','Access'],'2026-07-29',8,'Head of Research',{group:['other'],sub:['fof'],yield:0},860)
+];
+
+const st={product:'mf',checks:{},ranges:{},q:'',sort:'latest',view:'grid',page:1,perPage:9,saved:new Set()};
+try{const s=localStorage.getItem('al_saved');if(s)st.saved=new Set(JSON.parse(s));}catch(e){}
+const persist=()=>{try{localStorage.setItem('al_saved',JSON.stringify([...st.saved]));}catch(e){}};
+const labelFor=(pk,gid,val)=>{const g=FILTERS[pk].find(x=>x.id===gid);if(!g||!g.opts)return val;const o=g.opts.find(o=>o[0]===val);return o?o[1]:val;};
+const rangeMeta=(pk,rid)=>{for(const g of FILTERS[pk]){if(g.ranges){const r=g.ranges.find(r=>r.id===rid);if(r)return r;}}return null;};
+const fmtRange=(r,v)=>v<=r.min?'Any':(r.id==='vintage'?String(v):v+r.unit);
+
+function renderMega(){
+  D('rMegaGrid').innerHTML=Object.values(PRODUCTS).map(p=>
+    '<button class="mega-card" data-p="'+p.key+'">'
+    +'<div class="top"><span class="ico">'+svgIco(p.key,20)+'</span><span class="cnt">'+REPORTS.filter(r=>r.product===p.key).length+' reports</span></div>'
+    +'<h3>'+esc(p.name)+'</h3><p>'+esc(p.blurb)+'</p>'
+    +'<span class="readlink">Explore '+ARROW+'</span></button>').join('');
+  all('#rMegaGrid .mega-card').forEach(c=>c.addEventListener('click',()=>{
+    D('rMega').classList.remove('open');selectProduct(c.dataset.p);window.scrollTo({top:0,behavior:'smooth'});}));
+}
+D('rOpenMega').addEventListener('click',()=>D('rMega').classList.toggle('open'));
+
+function renderSwitch(){
+  D('rSwitch').innerHTML=Object.values(PRODUCTS).map(p=>
+    '<button class="ptab" role="tab" data-p="'+p.key+'" aria-selected="'+(p.key===st.product)+'">'
+    +'<span class="ico">'+svgIco(p.key,19)+'</span><span><span class="nm">'+esc(p.name)+'</span>'
+    +'<span class="ct">'+REPORTS.filter(r=>r.product===p.key).length+' reports</span></span></button>').join('');
+  all('#rSwitch .ptab').forEach(b=>b.addEventListener('click',()=>selectProduct(b.dataset.p)));
+}
+function selectProduct(k,keepQuery){
+  st.product=k;st.checks={};st.ranges={};st.page=1;
+  if(!keepQuery)st.q='';
+  const p=PRODUCTS[k];
+  D('rCrumbNow').textContent=p.crumb;D('rPTitle').textContent=p.title;D('rPLede').textContent=p.lede;
+  D('rResTitle').textContent=p.title;D('rQ').placeholder=p.searchPh;
+  if(!keepQuery){D('rQ').value='';D('rClearQ').classList.remove('on');}
+  D('rKpis').innerHTML=p.kpis.map(x=>'<div class="kpi"><span class="v">'+esc(x[0])+'</span><span class="l">'+esc(x[1])+'</span></div>').join('');
+  renderSwitch();renderFilters();render();showLibrary();
+}
+function renderFilters(){
+  const pk=st.product;
+  D('rFilterBody').innerHTML=FILTERS[pk].map(g=>{
+    let body='';
+    if(g.opts){
+      body=g.opts.map(([v,l])=>{
+        const n=REPORTS.filter(r=>r.product===pk&&(r.facets[g.id]||[]).includes(v)).length;
+        const on=(st.checks[g.id]||[]).includes(v);
+        return '<label class="opt"><input type="checkbox" data-g="'+g.id+'" value="'+v+'"'+(on?' checked':'')+'><span>'+esc(l)+'</span><span class="n">'+n+'</span></label>';
+      }).join('');
+    } else if(g.ranges){
+      body=g.ranges.map(r=>{
+        const val=st.ranges[r.id]??r.min;
+        return '<div class="rangebox"><label for="rg_'+r.id+'">'+esc(r.label)+'<b>'+fmtRange(r,val)+'</b></label>'
+          +'<input id="rg_'+r.id+'" type="range" data-r="'+r.id+'" min="'+r.min+'" max="'+r.max+'" step="'+r.step+'" value="'+val+'"></div>';}).join('');
+    }
+    const open=g.open!==false?'true':'false';
+    return '<div class="fgroup" data-open="'+open+'"><button type="button" aria-expanded="'+open+'">'+esc(g.label)
+      +'<svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>'
+      +'<div class="fbody">'+body+'</div></div>';}).join('');
+  all('#rFilterBody .fgroup>button').forEach(b=>b.addEventListener('click',()=>{
+    const g=b.parentElement,o=g.dataset.open!=='true';g.dataset.open=String(o);b.setAttribute('aria-expanded',String(o));}));
+  all('#rFilterBody input[type=checkbox]').forEach(cb=>cb.addEventListener('change',()=>{
+    const g=cb.dataset.g,arr=st.checks[g]||[];
+    st.checks[g]=cb.checked?[...arr,cb.value]:arr.filter(v=>v!==cb.value);
+    if(!st.checks[g].length)delete st.checks[g];
+    st.page=1;render();}));
+  all('#rFilterBody input[type=range]').forEach(rg=>rg.addEventListener('input',()=>{
+    const id=rg.dataset.r,meta=rangeMeta(st.product,id),v=parseFloat(rg.value);
+    if(v<=meta.min)delete st.ranges[id];else st.ranges[id]=v;
+    rg.previousElementSibling.querySelector('b').textContent=fmtRange(meta,v);
+    st.page=1;render();}));
+}
+function matches(r){
+  if(r.product!==st.product)return false;
+  for(const g in st.checks){const want=st.checks[g],have=r.facets[g]||[];if(!want.some(v=>have.includes(v)))return false;}
+  for(const id in st.ranges){const v=r.facets[id];if(v===undefined||v<st.ranges[id])return false;}
+  if(st.q){const hay=(r.title+' '+r.desc+' '+r.cat+' '+r.tags.join(' ')+' '+r.author).toLowerCase();
+    if(!hay.includes(st.q.toLowerCase()))return false;}
+  return true;
+}
+function sorted(list){const c=[...list];
+  if(st.sort==='latest'||st.sort==='updated')c.sort((a,b)=>b.date.localeCompare(a.date));
+  else if(st.sort==='read')c.sort((a,b)=>b.reads-a.reads);
+  else if(st.sort==='relevant')c.sort((a,b)=>(b.reads/1000+b.tags.length)-(a.reads/1000+a.tags.length));
+  return c;}
+function renderChips(){
+  const out=[];
+  for(const g in st.checks)for(const v of st.checks[g])
+    out.push('<span class="chip">'+esc(labelFor(st.product,g,v))+'<button class="x" data-g="'+g+'" data-v="'+v+'" aria-label="Remove filter">'+XICO+'</button></span>');
+  for(const id in st.ranges){const m=rangeMeta(st.product,id);
+    out.push('<span class="chip">'+esc(m.label)+' '+fmtRange(m,st.ranges[id])+'<button class="x" data-r="'+id+'" aria-label="Remove filter">'+XICO+'</button></span>');}
+  if(st.q)out.push('<span class="chip">Search: “'+esc(st.q)+'”<button class="x" data-q="1" aria-label="Clear search">'+XICO+'</button></span>');
+  if(out.length>1)out.push('<button class="chip clear" id="rClearAll">Clear all</button>');
+  D('rChips').innerHTML=out.join('');
+  all('#rChips .x').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.q){st.q='';D('rQ').value='';D('rClearQ').classList.remove('on');}
+    else if(b.dataset.r){delete st.ranges[b.dataset.r];}
+    else{const g=b.dataset.g;st.checks[g]=st.checks[g].filter(v=>v!==b.dataset.v);if(!st.checks[g].length)delete st.checks[g];}
+    st.page=1;renderFilters();render();}));
+  const ca=D('rClearAll');if(ca)ca.addEventListener('click',resetAll);
+}
+function resetAll(){st.checks={};st.ranges={};st.q='';D('rQ').value='';D('rClearQ').classList.remove('on');st.page=1;renderFilters();render();}
+function cardHTML(r){
+  const saved=st.saved.has(r.id);
+  const meta='<div class="meta"><span>'+fmtDate(r.date)+'</span><span>·</span><span>'+r.mins+' min read</span><span>·</span><span>'+esc(r.author)+'</span></div>';
+  const badge='<span class="badge"><b>'+esc(PRODUCTS[r.product].name)+'</b><i>'+esc(r.cat)+'</i></span>';
+  const tags='<div class="tags">'+r.tags.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>';
+  const foot='<div class="rfoot"><button class="read" data-ropen="'+r.id+'">Read research '+ARROW+'</button>'
+    +'<button class="save" data-rsave="'+r.id+'" aria-pressed="'+saved+'">'
+    +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-6-5-6 5V3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>'
+    +(saved?'Saved':'Save')+'</button></div>';
+  if(st.view==='list')
+    return '<article class="rcard"><div class="body">'+badge+'<h3>'+esc(r.title)+'</h3><p>'+esc(r.desc)+'</p>'+tags+meta+'</div>'+foot+'</article>';
+  return '<article class="rcard">'+badge+'<h3>'+esc(r.title)+'</h3><p>'+esc(r.desc)+'</p>'+tags+meta+foot+'</article>';
+}
+function render(){
+  const list=sorted(REPORTS.filter(matches));
+  const shown=list.slice(0,st.page*st.perPage);
+  D('rResCount').textContent=list.length+' research report'+(list.length===1?'':'s')+' found';
+  D('rMobCount').textContent=list.length?' · '+list.length:'';
+  D('rResults').className='results '+st.view;
+  if(!list.length){
+    D('rResults').className='results list';
+    D('rResults').innerHTML='<div class="empty"><h3>No research reports found</h3><p>Try removing some filters or broaden your search.</p><button class="btn btn-primary" id="rEmptyClear">Clear filters</button></div>';
+    D('rLoadmore').innerHTML='';D('rEmptyClear').addEventListener('click',resetAll);renderChips();return;}
+  D('rResults').innerHTML=shown.map(cardHTML).join('');
+  all('#rResults [data-ropen]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.ropen)));
+  all('#rResults [data-rsave]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.rsave;st.saved.has(id)?st.saved.delete(id):st.saved.add(id);persist();render();}));
+  const pages=Math.ceil(list.length/st.perPage);
+  let lm='';
+  if(shown.length<list.length)lm+='<button class="btn btn-outline" id="rMore">Load more research</button>';
+  if(pages>1)lm+='<div class="pager">'+Array.from({length:pages},(_,i)=>'<button data-pg="'+(i+1)+'" aria-current="'+(i+1===st.page)+'">'+(i+1)+'</button>').join('')+'</div>';
+  D('rLoadmore').innerHTML=lm;
+  const m=D('rMore');if(m)m.addEventListener('click',()=>{st.page++;render();});
+  all('#rLoadmore [data-pg]').forEach(b=>b.addEventListener('click',()=>{st.page=+b.dataset.pg;render();window.scrollTo({top:D('rResults').offsetTop-140,behavior:'smooth'});}));
+  renderChips();
+}
+/* search */
+(function(){
+  const q=D('rQ'),sug=D('rSuggest');
+  function build(){
+    const term=q.value.trim().toLowerCase(),p=PRODUCTS[st.product];
+    if(!term){sug.innerHTML='<div class="grp">Suggested searches</div>'+p.suggestions.map(s=>'<button data-s="'+esc(s)+'">'+esc(s)+'<span class="tp">topic</span></button>').join('');return;}
+    const rep=REPORTS.filter(r=>r.title.toLowerCase().includes(term)).slice(0,5);
+    const cats=[...new Set(REPORTS.filter(r=>r.cat.toLowerCase().includes(term)).map(r=>r.cat))].slice(0,4);
+    const prods=Object.values(PRODUCTS).filter(x=>x.name.toLowerCase().includes(term));
+    let h='';
+    if(prods.length)h+='<div class="grp">Products</div>'+prods.map(x=>'<button data-p="'+x.key+'">'+esc(x.name)+'<span class="tp">section</span></button>').join('');
+    if(cats.length)h+='<div class="grp">Categories</div>'+cats.map(c=>'<button data-s="'+esc(c)+'">'+esc(c)+'<span class="tp">category</span></button>').join('');
+    if(rep.length)h+='<div class="grp">Research</div>'+rep.map(r=>'<button data-ropen="'+r.id+'">'+esc(r.title)+'<span class="tp">'+esc(PRODUCTS[r.product].name)+'</span></button>').join('');
+    sug.innerHTML=h||'<div class="grp">No matches</div>';
+  }
+  q.addEventListener('focus',()=>{build();sug.classList.add('open');});
+  q.addEventListener('input',()=>{st.q=q.value.trim();st.page=1;D('rClearQ').classList.toggle('on',!!q.value);build();sug.classList.add('open');showLibrary();render();});
+  D('rClearQ').addEventListener('click',()=>{q.value='';st.q='';D('rClearQ').classList.remove('on');render();q.focus();});
+  sug.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    sug.classList.remove('open');
+    if(b.dataset.p)return selectProduct(b.dataset.p);
+    if(b.dataset.ropen)return openDetail(b.dataset.ropen);
+    q.value=b.dataset.s;st.q=b.dataset.s;D('rClearQ').classList.add('on');showLibrary();render();});
+  document.addEventListener('click',e=>{if(!sug.contains(e.target)&&e.target!==q)sug.classList.remove('open');});
+})();
+D('rSort').addEventListener('change',e=>{st.sort=e.target.value;st.page=1;render();});
+D('rVGrid').addEventListener('click',()=>{st.view='grid';D('rVGrid').setAttribute('aria-pressed','true');D('rVList').setAttribute('aria-pressed','false');render();});
+D('rVList').addEventListener('click',()=>{st.view='list';D('rVList').setAttribute('aria-pressed','true');D('rVGrid').setAttribute('aria-pressed','false');render();});
+D('rResetBtn').addEventListener('click',resetAll);
+D('rResetTop').addEventListener('click',resetAll);
+D('rApplyBtn').addEventListener('click',closeAllDrawers);
+D('rOpenFilters').addEventListener('click',()=>{D('rSidebar').classList.add('open');D('scrim').classList.add('open');});
+
+function showLibrary(){D('rLibrary').classList.add('on');D('rDetail').classList.remove('on');}
+function chartNav(){return '<svg viewBox="0 0 700 260" role="img" aria-label="Sample strategy versus benchmark growth">'
+  +[0,1,2,3].map(i=>'<line x1="0" y1="'+(i*65)+'" x2="700" y2="'+(i*65)+'" stroke="var(--border-soft)" stroke-width="1"/>').join('')
+  +'<polyline points="0,230 58,214 116,224 175,182 233,192 291,150 350,160 408,114 466,126 525,80 583,92 641,44 700,30" fill="none" stroke="var(--sage-ink)" stroke-width="2.6" stroke-linejoin="round"/>'
+  +'<polyline points="0,238 58,230 116,234 175,214 233,222 291,198 350,206 408,182 466,190 525,164 583,172 641,142 700,132" fill="none" stroke="var(--mist-ink)" stroke-width="2" stroke-dasharray="7 5"/></svg>';}
+function chartBars(){const v=[18,-7,26,11,-3,22,31];
+  return '<svg viewBox="0 0 700 180" role="img" aria-label="Sample calendar year returns">'
+  +v.map((x,i)=>{const h=Math.abs(x)*3.4,y=x>0?120-h:120;
+    return '<rect x="'+(i*98+22)+'" y="'+y+'" width="54" height="'+h+'" fill="'+(x>0?'var(--sage)':'var(--neg-soft)')+'" stroke="'+(x>0?'var(--sage-ink)':'var(--neg)')+'"/>'
+    +'<text x="'+(i*98+49)+'" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="var(--text3)">'+(2019+i)+'</text>';}).join('')
+  +'<line x1="0" y1="120" x2="700" y2="120" stroke="var(--text)" stroke-width="1"/></svg>';}
+function chartDD(){return '<svg viewBox="0 0 700 120" role="img" aria-label="Sample drawdown chart">'
+  +'<path d="M0 10 L62 10 L62 54 L124 54 L124 26 L196 26 L196 78 L268 78 L268 32 L340 32 L340 8 L412 8 L412 48 L484 48 L484 14 L556 14 L556 62 L628 62 L628 12 L700 12 L700 118 L0 118 Z" fill="var(--neg-soft)" stroke="var(--neg)" stroke-width="1.5"/></svg>';}
+
+function openDetail(id){
+  const r=REPORTS.find(x=>x.id===id);if(!r)return;
+  const saved=st.saved.has(r.id);
+  const secs=[['rsummary','Executive summary'],['rfindings','Key findings'],['rmethod','Methodology'],['rperf','Performance analysis'],['rrisk','Risk analysis'],['rport','Portfolio analysis'],['rmgr','Manager analysis'],['rval','Valuation analysis'],['rtake','Key takeaways'],['rlimits','Risks and limitations']];
+  D('rDetail').innerHTML='<div class="wrap">'
+  +'<div class="backbar"><button id="rBack"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to '+esc(PRODUCTS[r.product].title)+'</button></div>'
+  +'<div class="dcols"><article>'
+  +'<div class="dhead"><span class="badge"><b>'+esc(PRODUCTS[r.product].name)+'</b><i>'+esc(r.cat)+'</i></span>'
+  +'<h1>'+esc(r.title)+'</h1><p class="lede">'+esc(r.desc)+'</p>'
+  +'<div class="byline"><span class="av"></span><span><b>'+esc(r.author)+'</b></span><span>Published '+fmtDate(r.date)+'</span><span>'+r.mins+' min read</span><span class="demo">Sample report</span></div></div>'
+  +'<section class="sec" id="rsummary"><h2>Executive summary</h2>'
+  +'<p>This is sample copy standing in for the published report. It demonstrates the reading experience: a short orienting summary, then evidence, then a plain statement of what the research concluded and where it stops.</p>'
+  +'<div class="callout"><p>The headline finding sits here, stated in one sentence so a reader scanning the page can take the conclusion without reading the analysis.</p></div></section>'
+  +'<section class="sec" id="rfindings"><h2>Key findings</h2><ul>'
+  +'<li>Finding one, written as a claim rather than a topic, so it can be agreed or disagreed with.</li>'
+  +'<li>Finding two, with the magnitude attached — a number the reader can carry away.</li>'
+  +'<li>Finding three, naming the condition under which the first two stop holding.</li></ul></section>'
+  +'<section class="sec" id="rmethod"><h2>Methodology</h2>'
+  +'<p>Universe, period, data source, survivorship treatment and fee assumptions are stated here. Every figure in this report is sample data created for interface demonstration.</p>'
+  +'<div class="statgrid"><div><span class="v">2014–2026</span><span class="l">Period studied</span></div>'
+  +'<div><span class="v">Monthly</span><span class="l">Return frequency</span></div>'
+  +'<div><span class="v">Net</span><span class="l">Fee treatment</span></div>'
+  +'<div><span class="v">Included</span><span class="l">Closed funds</span></div></div></section>'
+  +'<section class="sec" id="rperf"><h2>Performance analysis</h2>'
+  +'<div class="statgrid"><div><span class="v pos">'+(r.facets.cagr3??r.facets.irr??'—')+'%</span><span class="l">'+(r.facets.irr?'IRR':'3Y CAGR')+'</span></div>'
+  +'<div><span class="v">'+(r.facets.alpha!=null?'+'+r.facets.alpha+'%':(r.facets.moic?r.facets.moic+'x':'—'))+'</span><span class="l">'+(r.facets.moic?'MOIC':'Alpha')+'</span></div>'
+  +'<div><span class="v">'+(r.facets.sharpe??'—')+'</span><span class="l">Sharpe ratio</span></div>'
+  +'<div><span class="v neg">−18.4%</span><span class="l">Max drawdown</span></div></div>'
+  +'<figure class="figure">'+chartNav()+'<figcaption>Growth of ₹100 — strategy (solid) versus benchmark (dashed). Sample data.</figcaption></figure>'
+  +'<figure class="figure">'+chartBars()+'<figcaption>Calendar-year returns. Sample data.</figcaption></figure>'
+  +'<div class="tscroll"><table class="t"><thead><tr><th>Period</th><th>Strategy</th><th>Benchmark</th><th>Excess</th><th>Sharpe</th></tr></thead><tbody>'
+  +[['1 year','14.2','11.8','+2.4','0.94'],['3 years','21.4','15.2','+6.2','1.18'],['5 years','18.9','14.1','+4.8','1.11'],['Since inception','17.6','13.4','+4.2','1.06']]
+    .map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'%</td><td>'+x[2]+'%</td><td class="pos">'+x[3]+'%</td><td>'+x[4]+'</td></tr>').join('')
+  +'</tbody></table></div></section>'
+  +'<section class="sec" id="rrisk"><h2>Risk analysis</h2>'
+  +'<p>Volatility, downside capture and recovery periods are examined separately from headline return, because the two tell different stories about the same track record.</p>'
+  +'<figure class="figure">'+chartDD()+'<figcaption>Underwater chart — drawdown from prior peak. Sample data.</figcaption></figure></section>'
+  +'<section class="sec" id="rport"><h2>Portfolio analysis</h2>'
+  +'<p>Holdings, sector allocation, market-cap distribution and concentration, with turnover as a check on whether stated process matches observed behaviour.</p>'
+  +'<div class="tscroll"><table class="t"><thead><tr><th>Sector</th><th>Weight</th><th>Benchmark</th><th>Active</th></tr></thead><tbody>'
+  +[['Financials','28.4','31.2','−2.8'],['Information technology','16.1','12.4','+3.7'],['Consumer','14.8','11.9','+2.9'],['Industrials','12.2','9.6','+2.6'],['Healthcare','9.4','6.8','+2.6'],['Energy and materials','11.0','18.3','−7.3']]
+    .map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'%</td><td>'+x[2]+'%</td><td class="'+(x[3][0]==='+'?'pos':'neg')+'">'+x[3]+'%</td></tr>').join('')
+  +'</tbody></table></div></section>'
+  +'<section class="sec" id="rmgr"><h2>Manager analysis</h2>'
+  +'<p>Tenure, prior track record, stated philosophy and team stability. Where a manager changed firms, performance is attributed to the period rather than the name.</p></section>'
+  +'<section class="sec" id="rval"><h2>Valuation analysis</h2>'
+  +'<div class="statgrid"><div><span class="v">24.6x</span><span class="l">Portfolio P/E</span></div>'
+  +'<div><span class="v">4.1x</span><span class="l">Portfolio P/B</span></div>'
+  +'<div><span class="v">18.2%</span><span class="l">ROE</span></div>'
+  +'<div><span class="v">21.4%</span><span class="l">ROCE</span></div></div></section>'
+  +'<section class="sec" id="rtake"><h2>Key takeaways</h2><ul>'
+  +'<li>What an allocator should do differently after reading this.</li>'
+  +'<li>Which investor this suits, and which it does not.</li>'
+  +'<li>What would change the conclusion.</li></ul></section>'
+  +'<section class="sec" id="rlimits"><h2>Risks and limitations</h2>'
+  +'<p>Sample size, period dependence, survivorship and the limits of backward-looking evidence are stated plainly here, alongside any conflicts of interest.</p>'
+  +'<p style="color:var(--text3);font-size:13.5px">This report is sample content for interface demonstration. It is not investment advice.</p></section>'
+  +'</article>'
+  +'<aside class="dpanel"><div class="panel"><h2>Research actions</h2><div class="pbody">'
+  +'<button class="btn '+(saved?'btn-accent':'btn-outline')+'" id="rDSave">'
+  +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-6-5-6 5V3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>'+(saved?'Saved':'Save research')+'</button>'
+  +'<button class="btn btn-quiet"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M7 11l5 5 5-5M4 20h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Download PDF</button>'
+  +'<button class="btn btn-quiet"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Share</button>'
+  +'<div class="toc" style="margin-top:16px;border-top:1px solid var(--border-soft);padding-top:14px">'+secs.map(s=>'<a href="#'+s[0]+'">'+s[1]+'</a>').join('')+'</div>'
+  +'</div></div>'
+  +'<div class="panel"><h2>Related news</h2><div class="pbody" style="display:flex;flex-direction:column;gap:10px">'
+  +'<p style="margin:0;font-size:13px;color:var(--text2)">See what the news desk has published on '+esc(r.cat.toLowerCase())+' and related themes.</p>'
+  +'<button class="readlink" data-tonews="'+esc(r.tags[0]||r.cat)+'">Open in News Intelligence '+ARROW+'</button>'
+  +'</div></div></aside></div></div>';
+  D('rLibrary').classList.remove('on');D('rDetail').classList.add('on');
+  D('rBack').addEventListener('click',()=>{showLibrary();window.scrollTo({top:0});});
+  D('rDSave').addEventListener('click',()=>{st.saved.has(r.id)?st.saved.delete(r.id):st.saved.add(r.id);persist();openDetail(r.id);});
+  all('#rDetail [data-tonews]').forEach(b=>b.addEventListener('click',()=>{NEWS.searchFor(b.dataset.tonews);}));
+  window.scrollTo({top:0});
+}
+function searchFor(term){
+  st.q=term;D('rQ').value=term;D('rClearQ').classList.add('on');st.page=1;
+  goPage('research');showLibrary();render();window.scrollTo({top:0});
+}
+function goProduct(k){goPage('research');selectProduct(k);window.scrollTo({top:0});}
+renderMega();renderSwitch();selectProduct('mf');
+return {searchFor,goProduct};
+})();
+
+/* =====================================================================
+   NEWS MODULE
+   ===================================================================== */
+const NEWS=(function(){
+const CATS={all:'All news',global:'Global economy',major:'Major economies',india:'Indian economy',industry:'Industry and sector',financial:'Financial sector',companies:'Companies',institutions:'Financial institutions',markets:'Markets'};
+const ASSETS={equity:'Equity',bonds:'Fixed income',gold:'Gold',oil:'Crude oil',inr:'INR',re:'Real estate'};
+const SENT={pos:'Positive',neu:'Neutral',neg:'Negative'};
+const IMP={high:'High',med:'Medium',low:'Low'};
+const IMPW={high:3,med:2,low:1};
+let N=0;const A=o=>({id:'n'+(++N),...o});
+const ART=[
+A({cat:'global',head:'Federal Reserve maintains policy rate as inflation remains a key concern',sum:'The committee held rates steady and kept the door open to a further move, with the statement leaning on recent services-inflation data rather than the labour market.',src:'Reuters',mins:35,geo:['us','global'],sent:'neu',imp:'high',breaking:true,featured:true,
+ assets:[['equity',-1,'Medium','A higher-for-longer path trims the discount-rate relief equity valuations had been pricing in, with long-duration growth names most exposed.'],['bonds',-1,'High','Front-end yields reprice upward as cut expectations are pushed out, pressuring prices on existing holdings.'],['gold',1,'Medium','Policy uncertainty supports safe-haven demand even as real yields stay elevated.'],['inr',-1,'Medium','A firmer dollar on rate differentials weighs on the rupee, with the central bank likely to smooth rather than defend a level.']],
+ sectors:['Banking','IT','Real estate'],companies:['Export-led IT services','Large private banks'],topics:['USFed','InterestRates','Inflation'],
+ research:['Global Macro: The Rate Path and Indian Equity Valuations','Government Bonds: Understanding Duration Risk','Gold ETFs vs Physical Gold']}),
+A({cat:'india',head:'India consumer inflation eases more than expected in September',sum:'Headline CPI moderated on softer food prices, improving the near-term policy outlook though core inflation remained close to the prior print.',src:'Mint',mins:52,geo:['india'],sent:'pos',imp:'high',
+ assets:[['equity',1,'High','A softer inflation path improves the odds of policy easing, which historically supports rate-sensitive sectors and broad market multiples.'],['bonds',1,'High','Lower inflation prints pull yields down across the curve, benefiting existing bondholders and longer-duration funds most.'],['inr',1,'Medium','Improved real-rate differentials and a better macro picture support the currency at the margin.'],['re',1,'Medium','Lower expected borrowing costs improve affordability and developer financing conditions.']],
+ sectors:['Banking','Real estate','Automobiles','FMCG'],companies:['Housing finance lenders','Two-wheeler manufacturers'],topics:['Inflation','RBI','IndiaGDP'],
+ research:['Corporate Bond Funds: Yield, Credit Quality and Risk','Government Securities Funds: Duration and Interest Rate Risk']}),
+A({cat:'markets',head:'Crude oil rises for a third session on supply disruption concerns',sum:'Brent extended gains as traders priced in a longer outage at a major export terminal, with inventories already below the five-year average.',src:'Bloomberg',mins:18,geo:['global'],sent:'neu',imp:'high',
+ assets:[['oil',1,'High','Supply-side disruption with low inventory cover gives prices an asymmetric upward bias until flows normalise.'],['equity',-1,'Medium','Higher input costs pressure margins for oil-importing industrials, transport and paints, outweighing gains for upstream producers.'],['inr',-1,'High','A wider import bill worsens the trade deficit, a reliable source of pressure on the rupee.'],['bonds',-1,'Medium','Imported inflation risk raises the floor under policy rates and lifts yields.']],
+ sectors:['Oil and gas','Automobiles','Logistics','Chemicals','Aviation'],companies:['Refiners','Paint manufacturers','Airlines'],topics:['CrudeOil','Inflation'],
+ research:['Thematic Funds: Concentration, Cyclicality and Risk','International ETFs and Funds: Currency, Cost and Access']}),
+A({cat:'institutions',head:'RBI keeps repo rate unchanged, retains its current stance',sum:'The Monetary Policy Committee voted to hold, flagging that food-price volatility remains the main risk to the inflation glidepath.',src:'RBI',mins:95,geo:['india'],sent:'neu',imp:'high',
+ assets:[['bonds',0,'Low','A fully expected hold leaves the curve broadly where it was; the statement language matters more than the decision.'],['equity',0,'Low','Markets had priced the hold, so the reaction is limited to sector rotation rather than index direction.'],['inr',1,'Low','Policy continuity is mildly supportive of currency stability.']],
+ sectors:['Banking','NBFC','Real estate'],companies:['Public sector banks','Housing finance lenders'],topics:['RBI','InterestRates','IndianBanking'],
+ research:['Government Bonds: Understanding Duration Risk','Balanced Advantage Funds: Does Dynamic Allocation Add Value?']}),
+A({cat:'india',head:"India's manufacturing PMI rises to a nine-month high",sum:'New orders and export demand both improved, with input cost inflation easing from the prior month.',src:'Business Standard',mins:140,geo:['india'],sent:'pos',imp:'med',
+ assets:[['equity',1,'Medium','Broad-based manufacturing strength supports earnings expectations for industrials and capital goods.'],['inr',1,'Low','Stronger export orders are modestly supportive of flows.'],['bonds',0,'Low','Growth data alone rarely moves the curve without an inflation signal attached.']],
+ sectors:['Capital goods','Industrials','Metals'],companies:['Engineering and construction'],topics:['IndiaGDP'],
+ research:['Mid Cap Funds: Balancing Growth and Valuation','Infrastructure AIFs: Cash Yield and Concession Risk']}),
+A({cat:'financial',head:'SEBI proposes standardised performance reporting for PMS and Category III AIFs',sum:'A consultation paper would require managers to publish time-weighted returns on a common template with uniform treatment of fees and cash drag.',src:'SEBI',mins:210,geo:['india'],sent:'pos',imp:'high',
+ assets:[['equity',0,'Low','No direct price effect; the impact is on comparability and distribution economics rather than earnings.']],
+ sectors:['Asset management','Wealth management','Capital markets'],companies:['Listed asset managers','PMS providers'],topics:['IndianBanking'],
+ research:['PMS Performance Review: Alpha, Consistency and Drawdown','Category II AIFs: Understanding the Investment Structure']}),
+A({cat:'major',head:'China factory activity contracts for a fourth straight month',sum:'The official PMI stayed below the expansion threshold, with property-linked demand still the main drag on the reading.',src:'Reuters',mins:260,geo:['china','global'],sent:'neg',imp:'med',
+ assets:[['oil',-1,'Medium','Weaker Chinese industrial demand removes a meaningful source of marginal crude consumption.'],['equity',-1,'Low','Indian metals and export-linked names carry some sensitivity to Chinese demand.'],['gold',1,'Low','Growth concerns provide mild safe-haven support.']],
+ sectors:['Metals','Chemicals','Energy'],companies:['Steel producers','Commodity chemicals'],topics:['CrudeOil'],
+ research:['Thematic Funds: Concentration, Cyclicality and Risk']}),
+A({cat:'companies',head:'Large private lender reports higher net interest margin, guides for stable credit costs',sum:'Quarterly results showed margin expansion on repricing of the loan book, with management guiding to stable provisioning through the year.',src:'Economic Times',mins:300,geo:['india'],sent:'pos',imp:'med',
+ assets:[['equity',1,'Medium','Margin expansion with contained credit cost is the combination that historically rerates lenders.']],
+ sectors:['Banking','Financial services'],companies:['Large private banks','NBFC peers'],topics:['IndianBanking'],
+ research:['Large Cap Funds: Performance Beyond the Benchmark','Quality PMS Strategies Through a Full Cycle']}),
+A({cat:'global',head:'Euro area inflation holds near target as wage growth cools',sum:'The flash estimate came in line with expectations, with services inflation continuing its gradual descent.',src:'Financial Times',mins:380,geo:['europe','global'],sent:'pos',imp:'med',
+ assets:[['bonds',1,'Medium','A credible disinflation path supports European duration and spills into global term premia.'],['equity',1,'Low','Lower policy risk is mildly supportive of global risk appetite.']],
+ sectors:['IT','Pharmaceuticals'],companies:['Europe-exposed IT services'],topics:['Inflation','InterestRates'],
+ research:['International ETFs and Funds: Currency, Cost and Access']}),
+A({cat:'markets',head:'Gold holds near record as central bank buying continues',sum:'Official-sector demand remained firm through the quarter, offsetting softer retail demand at higher price levels.',src:'Bloomberg',mins:420,geo:['global'],sent:'pos',imp:'med',
+ assets:[['gold',1,'High','Persistent official-sector demand changes the structural floor under the price, independent of real-rate moves.'],['inr',0,'Low','Higher gold imports marginally widen the trade deficit but official flows dominate the price story.']],
+ sectors:['Metals'],companies:['Gold financiers','Jewellery retail'],topics:['Gold'],
+ research:['Gold ETFs vs Physical Gold','Sovereign Gold Bonds at Maturity: What Investors Realised']}),
+A({cat:'industry',head:'Domestic passenger vehicle sales grow in double digits for the festive quarter',sum:'Volume growth was led by utility vehicles, though entry-level demand stayed soft year on year.',src:'Mint',mins:500,geo:['india'],sent:'pos',imp:'med',
+ assets:[['equity',1,'Medium','Volume-led earnings upgrades are most likely for manufacturers skewed to the utility-vehicle mix.']],
+ sectors:['Automobiles','Consumer durables','Logistics'],companies:['Passenger vehicle manufacturers','Auto component suppliers'],topics:['IndiaGDP'],
+ research:['Mid Cap PMS: Where Managers Add Value']}),
+A({cat:'financial',head:'Mutual fund equity inflows steady for a fourth consecutive month',sum:'Systematic investment contributions set another monthly record, while lump-sum flows into thematic funds moderated.',src:'Economic Times',mins:560,geo:['india'],sent:'pos',imp:'med',
+ assets:[['equity',1,'Medium','Sustained domestic flows reduce the market\u2019s dependence on foreign portfolio activity and dampen drawdowns.']],
+ sectors:['Asset management','Capital markets'],companies:['Listed asset managers'],topics:['IndianBanking'],
+ research:['Flexi Cap Funds: Understanding Allocation Flexibility','Thematic Funds: Concentration, Cyclicality and Risk']}),
+A({cat:'major',head:'US labour market data surprises to the upside',sum:'Payrolls exceeded consensus and the unemployment rate ticked lower, pushing back expectations of near-term policy easing.',src:'Reuters',mins:640,geo:['us','global'],sent:'neu',imp:'high',
+ assets:[['bonds',-1,'High','Strong employment data pushes rate-cut pricing further out and lifts yields across the curve.'],['equity',-1,'Medium','Good growth news reads as bad rates news while the market is trading on policy expectations.'],['inr',-1,'Medium','Dollar strength on rate differentials weighs on emerging-market currencies.'],['gold',-1,'Low','Higher real yields raise the opportunity cost of holding a non-yielding asset.']],
+ sectors:['IT','Banking'],companies:['Export-led IT services'],topics:['USFed','InterestRates'],
+ research:['Index Funds and Tracking Error: What You Actually Pay','International ETFs and Funds: Currency, Cost and Access']}),
+A({cat:'institutions',head:'Rating agency affirms sovereign outlook, citing fiscal consolidation progress',sum:'The affirmation referenced a narrowing deficit path and improved revenue buoyancy, while flagging contingent liabilities as a watch item.',src:'Business Standard',mins:720,geo:['india'],sent:'pos',imp:'med',
+ assets:[['bonds',1,'Medium','Outlook stability supports sovereign spreads and, by extension, corporate borrowing costs.'],['inr',1,'Low','Ratings continuity is a mild positive for portfolio flows.']],
+ sectors:['Banking','Infrastructure'],companies:['Public sector banks'],topics:['IndiaGDP'],
+ research:['Government Bonds: Understanding Duration Risk']}),
+A({cat:'industry',head:'IT services firms guide cautiously on discretionary technology spending',sum:'Management commentary across the sector pointed to continued deal wins but slower ramp-ups in discretionary programmes.',src:'Mint',mins:800,geo:['india','us'],sent:'neg',imp:'med',
+ assets:[['equity',-1,'Medium','Slower revenue conversion caps near-term earnings upgrades for the sector despite healthy order books.']],
+ sectors:['IT','Financial services'],companies:['Large-cap IT services','Mid-cap IT'],topics:['USFed'],
+ research:['Large Cap Funds: Performance Beyond the Benchmark']}),
+A({cat:'companies',head:'Energy conglomerate announces capacity expansion in renewables',sum:'The board approved a multi-year capital plan, funded from internal accruals and existing facilities.',src:'Economic Times',mins:900,geo:['india'],sent:'pos',imp:'low',
+ assets:[['equity',1,'Low','Capacity announcements affect sentiment more than near-term earnings; execution and returns on capital matter more.']],
+ sectors:['Energy','Renewable energy','Capital goods'],companies:['Integrated energy groups','EPC contractors'],topics:['IndiaGDP'],
+ research:['Infrastructure AIFs: Cash Yield and Concession Risk']}),
+A({cat:'global',head:'Global trade volumes recover modestly from last year\u2019s contraction',sum:'The monitoring body reported a sequential improvement, though volumes remain below the pre-slowdown trend.',src:'Financial Times',mins:1020,geo:['global'],sent:'pos',imp:'low',
+ assets:[['oil',1,'Low','Modest demand improvement is supportive at the margin.'],['equity',1,'Low','Export-linked sectors benefit, though the magnitude is small.']],
+ sectors:['Logistics','Metals','Textiles'],companies:['Shipping and logistics'],topics:['CrudeOil'],
+ research:['International ETFs and Funds: Currency, Cost and Access']}),
+A({cat:'india',head:'Government raises capital expenditure allocation for infrastructure projects',sum:'The revised allocation prioritises transport corridors and urban infrastructure, with disbursement front-loaded in the year.',src:'Business Standard',mins:1180,geo:['india'],sent:'pos',imp:'high',
+ assets:[['equity',1,'High','Front-loaded public capex has historically translated into order-book visibility for construction and capital goods.'],['bonds',-1,'Low','Higher spending raises supply concerns at the margin, though the fiscal path is unchanged.'],['re',1,'Medium','Urban infrastructure spending supports land values along corridors.']],
+ sectors:['Infrastructure','Capital goods','Metals','Real estate'],companies:['EPC contractors','Cement producers'],topics:['IndiaGDP'],
+ research:['Infrastructure AIFs: Cash Yield and Concession Risk','Indian InvITs: Income and Infrastructure Exposure']}),
+A({cat:'markets',head:'Midcap index snaps a three-week run as valuations draw profit-taking',sum:'Breadth narrowed through the week with investors rotating towards large-cap names and defensives.',src:'Economic Times',mins:1300,geo:['india'],sent:'neg',imp:'low',
+ assets:[['equity',-1,'Low','Rotation rather than de-risking; index-level impact is limited but the mid-cap premium compresses.']],
+ sectors:['Capital goods','Consumer durables'],companies:['Mid-cap industrials'],topics:['IndiaGDP'],
+ research:['Mid Cap Funds: Balancing Growth and Valuation','Small Cap Funds: Return Potential vs Drawdown Risk']}),
+A({cat:'financial',head:'Insurance regulator proposes revised solvency norms for life insurers',sum:'The draft would adjust capital treatment for certain long-duration liabilities, with a phased implementation window.',src:'IRDAI',mins:1450,geo:['india'],sent:'neu',imp:'med',
+ assets:[['equity',0,'Low','Capital-treatment changes affect growth capacity for specific insurers rather than the sector uniformly.'],['bonds',1,'Low','Revised duration treatment could increase structural demand for long-dated government paper.']],
+ sectors:['Insurance','Financial services'],companies:['Listed life insurers'],topics:['IndianBanking'],
+ research:['Government Securities Funds: Duration and Interest Rate Risk']}),
+A({cat:'companies',head:'Pharmaceutical exporter receives regulatory clearance for a key facility',sum:'The inspection closed without observations, clearing the path for pending approvals from the site.',src:'Reuters',mins:1600,geo:['india','us'],sent:'pos',imp:'med',
+ assets:[['equity',1,'Medium','Facility clearance removes an overhang and restores the pipeline conversion assumption for the exporter.']],
+ sectors:['Pharmaceuticals','Healthcare'],companies:['Export-led pharma'],topics:['USFed'],
+ research:['Thematic Funds: Concentration, Cyclicality and Risk']}),
+A({cat:'major',head:'Japan signals gradual normalisation of monetary policy',sum:'Officials indicated a measured approach, keeping the pace of adjustment dependent on wage and price data.',src:'Bloomberg',mins:1750,geo:['japan','global'],sent:'neu',imp:'med',
+ assets:[['bonds',-1,'Medium','Normalisation in the last major low-yield market lifts global term premia over time.'],['equity',-1,'Low','Carry-trade unwinding is a periodic source of risk-asset volatility.'],['gold',1,'Low','Policy transition uncertainty supports haven demand modestly.']],
+ sectors:['Banking','IT'],companies:['Export-led manufacturers'],topics:['InterestRates','USFed'],
+ research:['International ETFs and Funds: Currency, Cost and Access']})
+];
+const st={cat:'all',f:{geo:[],cat:[],sent:[],imp:[],asset:[],time:[],src:[]},q:'',sort:'time',page:1,per:6};
+const FS=[
+ {id:'geo',label:'Geography',open:true,opts:[['global','Global'],['india','India'],['us','US'],['china','China'],['europe','Europe'],['japan','Japan']]},
+ {id:'cat',label:'Category',open:true,opts:Object.entries(CATS).filter(([k])=>k!=='all')},
+ {id:'sent',label:'Sentiment',open:true,opts:[['pos','Positive'],['neu','Neutral'],['neg','Negative']]},
+ {id:'imp',label:'Impact',open:true,opts:[['high','High'],['med','Medium'],['low','Low']]},
+ {id:'asset',label:'Asset class',opts:Object.entries(ASSETS)},
+ {id:'time',label:'Time',opts:[['60','Last hour'],['1440','Last 24 hours'],['10080','Last 7 days'],['43200','Last 30 days']]},
+ {id:'src',label:'Source',opts:[...new Set(ART.map(a=>a.src))].sort().map(s=>[s,s])}
+];
+const sentBadge=s=>'<span class="sent '+s+'"><span class="dot"></span>'+SENT[s]+'</span>';
+const impBadge=i=>'<span class="imp"><span class="bars '+i[0]+'"><i></i><i></i><i></i></span>'+IMP[i].toUpperCase()+'</span>';
+const dirTxt=d=>d>0?'↑':(d<0?'↓':'→');
+const dirCls=d=>d>0?'up':(d<0?'dn':'nu');
+const strDots=s=>{const n=s==='High'?3:(s==='Medium'?2:1);return '<span class="str">'+[1,2,3].map(i=>'<i class="'+(i<=n?'on':'')+'"></i>').join('')+'</span>';};
+function assetRow(a,limit){
+  const list=limit?a.assets.slice(0,limit):a.assets;
+  return '<div class="ai">'+list.map((x,i)=>
+    '<button class="aichip '+dirCls(x[1])+'" data-tip="'+esc(a.id+'|'+i)+'">'+esc(ASSETS[x[0]])+' <span class="ar">'+dirTxt(x[1])+'</span>'+strDots(x[2])+'</button>').join('')
+    +(limit&&a.assets.length>limit?'<span class="aichip" style="color:var(--text3)">+'+(a.assets.length-limit)+'</span>':'')+'</div>';
+}
+/* ticker (shared header) */
+(function(){
+  const top=ART.filter(a=>a.imp==='high').slice(0,6);
+  const item=a=>'<button class="tickitem" data-nopen="'+a.id+'"><span class="tcat">'+esc(CATS[a.cat])+'</span>'+esc(a.head)+' '+ARROW+'<span class="ttime">'+ago(a.mins)+'</span></button>';
+  D('tickrun').innerHTML=top.map(item).join('')+top.map(item).join('');
+  all('#tickrun [data-nopen]').forEach(b=>b.addEventListener('click',()=>{goPage('news');openArticle(b.dataset.nopen);}));
+})();
+/* category nav */
+(function(){
+  D('nCatnav').innerHTML=Object.entries(CATS).map(([k,v])=>'<button data-cat="'+k+'" aria-current="'+(k===st.cat)+'">'+esc(v)+'</button>').join('');
+  D('nCatnav').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;
+    st.cat=b.dataset.cat;st.page=1;
+    all('#nCatnav button').forEach(x=>x.setAttribute('aria-current',String(x.dataset.cat===st.cat)));
+    showDash();render();window.scrollTo({top:0,behavior:'smooth'});});
+})();
+function matchOne(a,g,v){
+  if(g==='geo')return (a.geo||[]).includes(v);
+  if(g==='cat')return a.cat===v;
+  if(g==='sent')return a.sent===v;
+  if(g==='imp')return a.imp===v;
+  if(g==='asset')return a.assets.some(x=>x[0]===v);
+  if(g==='time')return a.mins<=+v;
+  if(g==='src')return a.src===v;
+  return true;
+}
+function renderFilters(){
+  D('nFilters').innerHTML=FS.map(g=>{
+    const body=g.opts.map(([v,l])=>{
+      const n=ART.filter(a=>matchOne(a,g.id,v)).length;
+      const on=st.f[g.id].includes(v);
+      return '<label class="opt"><input type="checkbox" data-g="'+g.id+'" value="'+esc(v)+'"'+(on?' checked':'')+'><span>'+esc(l)+'</span><span class="n">'+n+'</span></label>';}).join('');
+    const o=g.open?'true':'false';
+    return '<div class="fgrp" data-open="'+o+'"><button type="button">'+esc(g.label)+'<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="fb">'+body+'</div></div>';}).join('');
+  all('#nFilters .fgrp>button').forEach(b=>b.addEventListener('click',()=>{
+    const g=b.parentElement;g.dataset.open=g.dataset.open==='true'?'false':'true';}));
+  all('#nFilters input').forEach(cb=>cb.addEventListener('change',()=>{
+    const g=cb.dataset.g,arr=st.f[g];
+    st.f[g]=cb.checked?[...arr,cb.value]:arr.filter(v=>v!==cb.value);
+    st.page=1;render();}));
+}
+function matches(a){
+  if(st.cat!=='all'&&a.cat!==st.cat)return false;
+  for(const g in st.f){const sel=st.f[g];if(sel.length&&!sel.some(v=>matchOne(a,g,v)))return false;}
+  if(st.q){const h=(a.head+' '+a.sum+' '+a.src+' '+(a.sectors||[]).join(' ')+' '+(a.companies||[]).join(' ')+' '+(a.topics||[]).join(' ')+' '+(a.research||[]).join(' ')).toLowerCase();
+    if(!h.includes(st.q.toLowerCase()))return false;}
+  return true;
+}
+function sortList(l){const c=[...l];
+  if(st.sort==='time')c.sort((a,b)=>a.mins-b.mins);
+  if(st.sort==='impact')c.sort((a,b)=>IMPW[b.imp]-IMPW[a.imp]||a.mins-b.mins);
+  if(st.sort==='source')c.sort((a,b)=>a.src.localeCompare(b.src));
+  return c;}
+function labelOf(g,v){const grp=FS.find(x=>x.id===g);const o=grp.opts.find(o=>o[0]===v);return o?o[1]:v;}
+function renderChips(){
+  const out=[];
+  for(const g in st.f)for(const v of st.f[g])
+    out.push('<span class="chip">'+esc(labelOf(g,v))+'<button class="x" data-g="'+g+'" data-v="'+esc(v)+'" aria-label="Remove">'+XICO+'</button></span>');
+  if(st.q)out.push('<span class="chip">Search: “'+esc(st.q)+'”<button class="x" data-q="1" aria-label="Clear">'+XICO+'</button></span>');
+  if(out.length>1)out.push('<button class="chip clear" id="nClrAll">Clear all</button>');
+  D('nChips').innerHTML=out.join('');
+  all('#nChips .x').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.q){st.q='';D('nQ').value='';}
+    else{const g=b.dataset.g;st.f[g]=st.f[g].filter(v=>v!==b.dataset.v);}
+    st.page=1;renderFilters();render();}));
+  const c=D('nClrAll');if(c)c.addEventListener('click',clearAll);
+}
+function clearAll(){for(const g in st.f)st.f[g]=[];st.q='';D('nQ').value='';st.page=1;renderFilters();render();}
+D('nClearSide').addEventListener('click',clearAll);
+function meta(a){
+  return '<div class="metarow"><span class="cat">'+esc(CATS[a.cat])+'</span><span class="vsep"></span>'
+    +sentBadge(a.sent)+'<span class="vsep"></span>'+impBadge(a.imp)
+    +'<span class="vsep"></span><span class="src">'+esc(a.src)+' · '+ago(a.mins)+'</span></div>';
+}
+function heroArt(){return '<svg viewBox="0 0 900 200" preserveAspectRatio="none" aria-hidden="true">'
+  +[0,1,2,3].map(i=>'<line x1="0" y1="'+(i*50)+'" x2="900" y2="'+(i*50)+'" stroke="var(--border-soft)" stroke-width="1"/>').join('')
+  +'<polyline points="0,172 75,160 150,166 225,136 300,146 375,114 450,124 525,90 600,100 675,66 750,76 825,42 900,30" fill="none" stroke="var(--sage-ink)" stroke-width="2.6"/>'
+  +'<polyline points="0,180 75,174 150,178 225,162 300,170 375,150 450,158 525,138 600,146 675,124 750,132 825,106 900,98" fill="none" stroke="var(--mist-ink)" stroke-width="2" stroke-dasharray="7 5"/></svg>';}
+function featureHTML(a){
+  return '<article class="feature"><div class="vis">'+heroArt()+'</div><div class="in">'+meta(a)
+    +'<h3>'+esc(a.head)+'</h3><p>'+esc(a.sum)+'</p>'+assetRow(a)
+    +'<button class="readlink" data-nopen="'+a.id+'">Read full analysis '+ARROW+'</button></div></article>';}
+function cardHTML(a,compact){
+  return '<article class="ncard">'+meta(a)+'<h3>'+esc(a.head)+'</h3>'
+    +(compact?'':'<p>'+esc(a.sum)+'</p>')+assetRow(a,compact?3:4)
+    +'<button class="readlink" data-nopen="'+a.id+'">Read analysis '+ARROW+'</button></article>';}
+function renderMarketImpact(list){
+  const agg={};for(const k in ASSETS)agg[k]={s:0,n:0};
+  list.forEach(a=>a.assets.forEach(x=>{const w=IMPW[a.imp]*(x[2]==='High'?3:x[2]==='Medium'?2:1);agg[x[0]].s+=x[1]*w;agg[x[0]].n+=w;}));
+  D('nMarketImpact').innerHTML=Object.entries(ASSETS).map(([k,l])=>{
+    const g=agg[k],score=g.n?g.s/g.n:0;
+    const lab=score>0.15?'Positive':score<-0.15?'Negative':'Neutral';
+    const cls=score>0.15?'pos':score<-0.15?'neg':'neu';
+    const w=Math.min(50,Math.abs(score)*50);
+    const bar=score>=0?'<b style="left:50%;width:'+w+'%;background:var(--sage-ink)"></b>':'<b style="right:50%;width:'+w+'%;background:var(--neg)"></b>';
+    return '<div class="mirow"><span class="nm">'+esc(l)+'</span><span class="val">'
+      +'<span class="sent '+cls+'"><span class="dot"></span>'+lab+'</span><span class="gauge">'+bar+'</span></span></div>';}).join('');
+}
+function renderTrending(){
+  const counts={};
+  ART.forEach(a=>(a.topics||[]).forEach(t=>{counts[t]=counts[t]||{n:0,s:0,assets:new Set()};
+    counts[t].n++;counts[t].s+=(a.sent==='pos'?1:a.sent==='neg'?-1:0);
+    a.assets.forEach(x=>counts[t].assets.add(ASSETS[x[0]]));}));
+  const list=Object.entries(counts).sort((a,b)=>b[1].n-a[1].n).slice(0,8);
+  D('nTrending').innerHTML=list.map(([t,d])=>{
+    const cls=d.s>0?'pos':d.s<0?'neg':'neu',lab=d.s>0?'Positive':d.s<0?'Negative':'Mixed';
+    return '<button class="topic" data-topic="'+esc(t)+'"><span class="tg">#'+esc(t)+'</span>'
+      +'<span class="tm"><span class="mono">'+d.n+' article'+(d.n>1?'s':'')+'</span>'
+      +'<span class="sent '+cls+'"><span class="dot"></span>'+lab+'</span><span class="trend">↑ trending</span></span>'
+      +'<span class="mono" style="font-size:10.5px;color:var(--text3)">'+[...d.assets].slice(0,3).join(' · ')+'</span></button>';}).join('');
+  all('#nTrending .topic').forEach(b=>b.addEventListener('click',()=>openTopic(b.dataset.topic)));
+}
+function renderHeatmap(){
+  const regions=[['global','Global'],['india','India'],['us','US'],['china','China'],['europe','Europe']];
+  let h='<table class="hm"><thead><tr><th></th>'+regions.map(r=>'<th>'+r[1]+'</th>').join('')+'</tr></thead><tbody>';
+  Object.entries(ASSETS).forEach(([k,l])=>{
+    h+='<tr><td>'+esc(l)+'</td>';
+    regions.forEach(([rk,rl])=>{
+      let s=0,n=0;
+      ART.forEach(a=>{if(!(a.geo||[]).includes(rk))return;
+        a.assets.forEach(x=>{if(x[0]!==k)return;const w=IMPW[a.imp];s+=x[1]*w;n+=w;});});
+      const sc=n?s/n:0,inten=Math.min(1,n/6);
+      let bg='var(--border-soft)',txt='·';
+      if(n){ if(sc>0.15){bg='rgba(67,107,72,'+(0.14+inten*0.5)+')';txt='+';}
+        else if(sc<-0.15){bg='rgba(168,65,58,'+(0.14+inten*0.5)+')';txt='−';}
+        else{bg='rgba(107,134,158,'+(0.12+inten*0.3)+')';txt='=';} }
+      h+='<td><div class="cell" style="background:'+bg+'" title="'+esc(l+' · '+rl+(n?'':' — no articles'))+'">'+txt+'</div></td>';});
+    h+='</tr>';});
+  D('nHeatmap').innerHTML=h+'</tbody></table>';
+}
+function render(){
+  const list=sortList(ART.filter(matches));
+  D('nFeedTitle').textContent=st.cat==='all'?'Top news':CATS[st.cat];
+  D('nFeedCount').textContent=list.length+' article'+(list.length===1?'':'s')+' match your filters';
+  D('nMobCount').textContent=' · '+list.length;
+  renderChips();
+  if(!list.length){
+    D('nFeatured').innerHTML='<div class="empty"><h3>No news matches these filters</h3><p>Try widening the time window, or clearing sentiment and impact.</p><button class="btn btn-primary" id="nEClear">Clear filters</button></div>';
+    D('nTopgrid').innerHTML='';D('nFeed').innerHTML='';D('nLatestHead').style.display='none';D('nMore').style.display='none';
+    D('nEClear').addEventListener('click',clearAll);renderMarketImpact([]);return;}
+  D('nLatestHead').style.display='';
+  const feat=list.find(a=>a.featured)||list[0];
+  const rest=list.filter(a=>a!==feat);
+  D('nFeatured').innerHTML=featureHTML(feat);
+  D('nTopgrid').innerHTML=rest.slice(0,2).map(a=>cardHTML(a)).join('');
+  const latest=rest.slice(2),shown=latest.slice(0,st.page*st.per);
+  D('nLatestCount').textContent=latest.length+' in this feed';
+  D('nFeed').innerHTML=shown.map(a=>cardHTML(a,true)).join('');
+  D('nMore').style.display=shown.length<latest.length?'':'none';
+  renderMarketImpact(list);bindOpens();
+}
+function bindOpens(){
+  all('[data-nopen]').forEach(b=>{b.onclick=()=>{goPage('news');openArticle(b.dataset.nopen);};});
+  all('#pgNews .aichip[data-tip]').forEach(b=>{
+    b.onclick=e=>{e.stopPropagation();showTip(b);};
+    b.onmouseenter=()=>showTip(b);b.onmouseleave=hideTip;
+    b.onfocus=()=>showTip(b);b.onblur=hideTip;});
+}
+function showTip(el){
+  const [id,i]=el.dataset.tip.split('|');
+  const a=ART.find(x=>x.id===id);if(!a)return;
+  const x=a.assets[+i],t=D('tip');
+  t.innerHTML='<b>'+esc(ASSETS[x[0]])+' '+dirTxt(x[1])+' — '+esc(x[2])+'</b>'+esc(x[3]);
+  t.classList.add('on');
+  const r=el.getBoundingClientRect(),w=Math.min(280,window.innerWidth-24);
+  t.style.width=w+'px';
+  t.style.left=Math.max(12,Math.min(window.innerWidth-w-12,r.left))+'px';
+  const th=t.offsetHeight;
+  t.style.top=(r.top-th-10>8?r.top-th-10:r.bottom+10)+'px';
+}
+D('nMore').addEventListener('click',()=>{st.page++;render();});
+D('nSort').addEventListener('change',e=>{st.sort=e.target.value;render();});
+D('nApplyBtn').addEventListener('click',closeAllDrawers);
+D('nOpenFilters').addEventListener('click',()=>{D('nRailL').classList.add('open');D('scrim').classList.add('open');});
+(function(){
+  const b=ART.find(a=>a.breaking);if(!b)return;
+  D('nBreakingSlot').innerHTML='<button class="breaking" data-nopen="'+b.id+'"><span class="lab">BREAKING</span>'
+    +'<span class="hl">'+esc(b.head)+'</span>'+sentBadge(b.sent)+impBadge(b.imp)
+    +'<span class="mt">'+esc(b.src)+' · '+ago(b.mins)+'</span></button>';
+})();
+/* search */
+(function(){
+  const q=D('nQ'),s=D('nSuggest');
+  const RECENT=['RBI','Crude oil','US Fed'],TRENDING=['India inflation','Gold','Banking sector','Interest rates'];
+  function build(){
+    const t=q.value.trim().toLowerCase();
+    if(!t){s.innerHTML='<div class="grp">Recent searches</div>'+RECENT.map(r=>'<button data-s="'+esc(r)+'">'+esc(r)+'<span class="tp">recent</span></button>').join('')
+      +'<div class="grp">Trending searches</div>'+TRENDING.map(r=>'<button data-s="'+esc(r)+'">'+esc(r)+'<span class="tp">trending</span></button>').join('');return;}
+    const news=ART.filter(a=>a.head.toLowerCase().includes(t)).slice(0,4);
+    const secs=[...new Set(ART.flatMap(a=>a.sectors||[]))].filter(x=>x.toLowerCase().includes(t)).slice(0,3);
+    const cos=[...new Set(ART.flatMap(a=>a.companies||[]))].filter(x=>x.toLowerCase().includes(t)).slice(0,3);
+    const tops=[...new Set(ART.flatMap(a=>a.topics||[]))].filter(x=>x.toLowerCase().includes(t)).slice(0,3);
+    const res=[...new Set(ART.flatMap(a=>a.research||[]))].filter(x=>x.toLowerCase().includes(t)).slice(0,3);
+    let h='';
+    if(news.length)h+='<div class="grp">News</div>'+news.map(a=>'<button data-nopen="'+a.id+'">'+esc(a.head)+'<span class="tp">'+esc(CATS[a.cat])+'</span></button>').join('');
+    if(tops.length)h+='<div class="grp">Topics</div>'+tops.map(x=>'<button data-topic="'+esc(x)+'">#'+esc(x)+'<span class="tp">topic</span></button>').join('');
+    if(secs.length)h+='<div class="grp">Sectors</div>'+secs.map(x=>'<button data-s="'+esc(x)+'">'+esc(x)+'<span class="tp">sector</span></button>').join('');
+    if(cos.length)h+='<div class="grp">Companies</div>'+cos.map(x=>'<button data-s="'+esc(x)+'">'+esc(x)+'<span class="tp">company</span></button>').join('');
+    if(res.length)h+='<div class="grp">Research</div>'+res.map(x=>'<button data-tores="'+esc(x)+'">'+esc(x)+'<span class="tp">report</span></button>').join('');
+    s.innerHTML=h||'<div class="grp">No matches</div>';
+  }
+  q.addEventListener('focus',()=>{build();s.classList.add('open');});
+  q.addEventListener('input',()=>{st.q=q.value.trim();st.page=1;build();s.classList.add('open');showDash();render();});
+  s.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    s.classList.remove('open');
+    if(b.dataset.nopen)return openArticle(b.dataset.nopen);
+    if(b.dataset.topic)return openTopic(b.dataset.topic);
+    if(b.dataset.tores)return RESEARCH.searchFor(b.dataset.tores);
+    q.value=b.dataset.s;st.q=b.dataset.s;showDash();render();});
+  document.addEventListener('click',e=>{if(!s.contains(e.target)&&e.target!==q)s.classList.remove('open');});
+})();
+function showDash(){D('nDash').classList.add('on');D('nArticle').classList.remove('on');D('nTopic').classList.remove('on');}
+function showOnly(id){['nDash','nArticle','nTopic'].forEach(v=>D(v).classList.toggle('on',v===id));window.scrollTo({top:0});}
+function whyText(a){
+  const up=a.assets.filter(x=>x[1]>0).map(x=>ASSETS[x[0]]);
+  const dn=a.assets.filter(x=>x[1]<0).map(x=>ASSETS[x[0]]);
+  let s='Rated '+IMP[a.imp].toLowerCase()+' impact with '+SENT[a.sent].toLowerCase()+' sentiment. ';
+  if(up.length)s+=up.join(' and ')+' screen as the likely beneficiaries. ';
+  if(dn.length)s+=dn.join(' and ')+' carry the downside risk. ';
+  s+='The affected sectors are '+(a.sectors||[]).slice(0,3).join(', ').toLowerCase()+', and the reasoning behind each asset call is set out in the matrix below.';
+  return s;
+}
+function openArticle(id){
+  const a=ART.find(x=>x.id===id);if(!a)return;
+  const matrix=a.assets.map(x=>
+    '<tr><td><b>'+esc(ASSETS[x[0]])+'</b></td>'
+    +'<td><span class="sent '+(x[1]>0?'pos':x[1]<0?'neg':'neu')+'"><span class="dot"></span>'+(x[1]>0?'Positive':x[1]<0?'Negative':'Neutral')+' '+dirTxt(x[1])+'</span></td>'
+    +'<td><span class="imp"><span class="bars '+(x[2]==='High'?'h':x[2]==='Medium'?'m':'l')+'"><i></i><i></i><i></i></span>'+x[2].toUpperCase()+'</span></td>'
+    +'<td class="exp">'+esc(x[3])+'</td></tr>').join('');
+  D('nArticle').innerHTML='<div class="wrap">'
+  +'<div class="backbar"><button id="nBack"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to news</button></div>'
+  +'<div class="acols"><article>'
+  +'<div class="ahead">'+meta(a)+'<h1>'+esc(a.head)+'</h1><p class="lede">'+esc(a.sum)+'</p>'
+  +'<div class="abyline"><span><b>'+esc(a.src)+'</b></span><span>Published '+ago(a.mins)+'</span><span>Updated '+ago(Math.max(1,Math.floor(a.mins*0.4)))+'</span><span class="demo">Demo article</span></div></div>'
+  +'<section class="asec"><h2>Why it matters</h2><div class="whybox"><p>'+esc(whyText(a))+'</p></div></section>'
+  +'<section class="asec"><h2>What happened</h2><p>'+esc(a.sum)+'</p>'
+  +'<p>Full article body would sit here, sourced from the publisher or summarised under licence. For this prototype the field is left as placeholder copy so the intelligence layer above and below it can be evaluated on its own.</p></section>'
+  +'<section class="asec"><h2>Market intelligence</h2>'
+  +'<div class="metarow" style="margin-bottom:16px">'+sentBadge(a.sent)+'<span class="vsep"></span>'+impBadge(a.imp)+'</div>'
+  +'<p style="font-size:14px">Sentiment describes the tone of the development. Impact describes how materially it could move markets. The two are scored separately, and a single article can be positive in tone while negative for a specific asset.</p>'
+  +'<div style="overflow-x:auto"><table class="matrix"><thead><tr><th>Asset</th><th>Direction</th><th>Strength</th><th>Why</th></tr></thead><tbody>'+matrix+'</tbody></table></div>'
+  +'<p style="font-size:12.5px;color:var(--text3);margin-top:12px">Asset-impact estimates are demo values generated for this prototype. They are not forecasts and not investment recommendations.</p></section>'
+  +'<section class="asec"><h2>Who is affected</h2>'
+  +'<p style="margin-bottom:8px"><b style="color:var(--text)">Sectors</b></p><div class="tagrow" style="margin-bottom:18px">'+(a.sectors||[]).map(s=>'<button data-s="'+esc(s)+'">'+esc(s)+'</button>').join('')+'</div>'
+  +'<p style="margin-bottom:8px"><b style="color:var(--text)">Companies</b></p><div class="tagrow" style="margin-bottom:18px">'+(a.companies||[]).map(s=>'<span>'+esc(s)+'</span>').join('')+'</div>'
+  +'<p style="margin-bottom:8px"><b style="color:var(--text)">Assets</b></p><div class="tagrow">'+a.assets.map(x=>'<span>'+esc(ASSETS[x[0]])+' '+dirTxt(x[1])+'</span>').join('')+'</div></section>'
+  +'<section class="asec"><h2>Related Alt Ledger research</h2><div class="rr">'
+  +(a.research||[]).map(r=>'<article class="rrcard"><span class="cat">Research report</span><h4>'+esc(r)+'</h4>'
+    +'<button class="readlink" data-tores="'+esc(r)+'">Open in Research '+ARROW+'</button></article>').join('')
+  +'</div></section>'
+  +'<section class="asec"><h2>Related topics</h2><div class="tagrow">'
+  +(a.topics||[]).map(t=>'<button data-topic="'+esc(t)+'">#'+esc(t)+'</button>').join('')+'</div></section>'
+  +'</article>'
+  +'<aside class="apanel">'
+  +'<div class="panel"><h2>Article actions</h2><div class="pbody">'
+  +'<button class="btn btn-outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-6-5-6 5V3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Save article</button>'
+  +'<button class="btn btn-quiet"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add to watchlist</button>'
+  +'<button class="btn btn-quiet"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Share</button>'
+  +'</div></div>'
+  +'<div class="panel"><h2>Asset impact at a glance</h2><div class="pbody">'+assetRow(a)+'</div>'
+  +'<p class="disc">Tap any asset for the reasoning behind the call.</p></div>'
+  +'<div class="panel"><h2>More in '+esc(CATS[a.cat])+'</h2><div class="pbody" style="display:flex;flex-direction:column;gap:12px">'
+  +ART.filter(x=>x.cat===a.cat&&x!==a).slice(0,3).map(x=>
+    '<button data-nopen="'+x.id+'" style="display:flex;flex-direction:column;gap:5px;border-bottom:1px solid var(--border-soft);padding-bottom:11px">'
+    +'<span style="font-size:14px;font-weight:600;line-height:1.35">'+esc(x.head)+'</span>'
+    +'<span class="metarow">'+sentBadge(x.sent)+impBadge(x.imp)+'</span></button>').join('')
+  +'</div></div></aside></div></div>';
+  showOnly('nArticle');
+  D('nBack').addEventListener('click',()=>{showDash();render();});
+  all('#nArticle [data-topic]').forEach(b=>b.addEventListener('click',()=>openTopic(b.dataset.topic)));
+  all('#nArticle [data-tores]').forEach(b=>b.addEventListener('click',()=>RESEARCH.searchFor(b.dataset.tores)));
+  all('#nArticle [data-s]').forEach(b=>b.addEventListener('click',()=>{D('nQ').value=b.dataset.s;st.q=b.dataset.s;showDash();render();}));
+  bindOpens();
+}
+function openTopic(t){
+  const list=sortList(ART.filter(a=>(a.topics||[]).includes(t)));
+  const pos=list.filter(a=>a.sent==='pos').length,neg=list.filter(a=>a.sent==='neg').length;
+  const lab=pos>neg?'Positive':neg>pos?'Negative':'Mixed',cls=pos>neg?'pos':neg>pos?'neg':'neu';
+  const hi=list.filter(a=>a.imp==='high').length;
+  const assets=[...new Set(list.flatMap(a=>a.assets.map(x=>x[0])))];
+  const secs=[...new Set(list.flatMap(a=>a.sectors||[]))];
+  const cos=[...new Set(list.flatMap(a=>a.companies||[]))];
+  const res=[...new Set(list.flatMap(a=>a.research||[]))];
+  D('nTopic').innerHTML='<div class="wrap">'
+  +'<div class="backbar"><button id="nTBack"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to news</button></div>'
+  +'<div class="thead"><h1>#'+esc(t)+'</h1>'
+  +'<div class="metarow"><span class="sent '+cls+'"><span class="dot"></span>'+lab+' overall</span><span class="vsep"></span>'
+  +'<span class="trend">↑ trending</span><span class="vsep"></span><span class="demo">Demo data</span></div>'
+  +'<div class="tstats"><div><span class="v">'+list.length+'</span><span class="l">Articles</span></div>'
+  +'<div><span class="v">'+hi+'</span><span class="l">High impact</span></div>'
+  +'<div><span class="v">'+assets.length+'</span><span class="l">Assets affected</span></div>'
+  +'<div><span class="v">'+secs.length+'</span><span class="l">Sectors affected</span></div></div></div>'
+  +'<div class="acols" style="padding-top:28px"><div>'
+  +'<div class="secthead"><h2>Latest on this topic</h2></div>'
+  +'<div class="feed">'+list.map(a=>cardHTML(a)).join('')+'</div></div>'
+  +'<aside class="apanel">'
+  +'<div class="panel"><h2>Sectors affected</h2><div class="pbody"><div class="tagrow">'+secs.map(s=>'<span>'+esc(s)+'</span>').join('')+'</div></div></div>'
+  +'<div class="panel"><h2>Companies in focus</h2><div class="pbody"><div class="tagrow">'+cos.slice(0,8).map(s=>'<span>'+esc(s)+'</span>').join('')+'</div></div></div>'
+  +'<div class="panel"><h2>Related research</h2><div class="pbody" style="display:flex;flex-direction:column;gap:10px">'
+  +res.slice(0,4).map(r=>'<button data-tores="'+esc(r)+'" style="font-size:14px;font-weight:600;line-height:1.35">'+esc(r)+'</button>').join('')
+  +'</div></div></aside></div></div>';
+  showOnly('nTopic');
+  D('nTBack').addEventListener('click',()=>{showDash();render();});
+  all('#nTopic [data-tores]').forEach(b=>b.addEventListener('click',()=>RESEARCH.searchFor(b.dataset.tores)));
+  bindOpens();
+}
+function searchFor(term){
+  st.q=term;D('nQ').value=term;st.cat='all';st.page=1;
+  all('#nCatnav button').forEach(x=>x.setAttribute('aria-current',String(x.dataset.cat==='all')));
+  goPage('news');showDash();render();window.scrollTo({top:0});
+}
+function goCategory(c){
+  st.cat=c;st.page=1;
+  all('#nCatnav button').forEach(x=>x.setAttribute('aria-current',String(x.dataset.cat===c)));
+  goPage('news');showDash();render();window.scrollTo({top:0});
+}
+renderFilters();renderTrending();renderHeatmap();render();bindOpens();
+return {searchFor,goCategory,openArticle};
+})();
+
+/* =====================================================================
+   FOOTER CROSS-LINKS + BOOT
+   ===================================================================== */
+all('[data-goprod]').forEach(b=>b.addEventListener('click',()=>RESEARCH.goProduct(b.dataset.goprod)));
+all('[data-gonews]').forEach(b=>b.addEventListener('click',()=>NEWS.goCategory(b.dataset.gonews)));
+goPage(location.hash==='#news'?'news':'research');
+</script>
+</body>
+</html>
